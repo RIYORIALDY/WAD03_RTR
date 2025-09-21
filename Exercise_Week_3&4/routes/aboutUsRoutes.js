@@ -4,7 +4,7 @@ const router = express.Router();
 // Database sederhana (mock data)
 const users = [
   { user: 'RIYO ', name: 'RIYO RIALDY URDA', nim: '24120500013' },
-  { user: 'TAQIi', name: 'MUHAMMAD TAQI DZAKWAN', nim: '24120400008' },
+  { user: 'TAQI', name: 'MUHAMMAD TAQI DZAKWAN', nim: '24120400008' },
   { user: 'RAYEN', name: 'RAYEN AURILIANSYAH', nim: '24120400004' },
   // Anda bisa menambahkan data lain di sini
 ];
