@@ -1,0 +1,14 @@
+[
+  {
+    "product_name": "kopi-robusta",
+    "product_category": "minuman",
+    "price": 15000,
+    "owner": "RIYO"
+  },
+  {
+    "product_name": "teh-hijau",
+    "product_category": "minuman",
+    "price": 12000,
+    "owner": "RIYO"
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "username": "RAYEN",
+    "items": [
+      {
+        "product_name": "kopi-robusta",
+        "quantity": 2
+      },
+      {
+        "product_name": "teh-hijau",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "username": "TAQI",
+    "items": [
+      {
+        "product_name": "kopi-robusta",
+        "quantity": 1
+      },
+      {
+        "product_name": "teh-hijau",
+        "quantity": 2
+      }
+    ]
+  }
+]
