@@ -5,7 +5,6 @@ const usersFilePath = path.join(__dirname, '../../data/users.json');
 
 const sellerOnly = (req, res, next) => {
   try {
-    // Ambil username dari body atau header
     const username = req.body.owner || req.headers['x-username'];
 
     if (!username) {
@@ -14,7 +13,6 @@ const sellerOnly = (req, res, next) => {
       });
     }
 
-    // Baca users dari file
     const users = JSON.parse(fs.readFileSync(usersFilePath, 'utf8'));
     const user = users.find(u => u.username === username);
 
@@ -30,7 +28,6 @@ const sellerOnly = (req, res, next) => {
       });
     }
 
-    // Simpan user info di request untuk digunakan di controller
     req.user = user;
     next();
   } catch (error) {
