@@ -1,0 +1,24 @@
+[
+  {
+    "username": "rayen_buyer",
+    "items": [
+      {
+        "productName": "Laptop Gaming",
+        "productCategory": "Electronics",
+        "price": 15000000,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "username": "taqi_buyer",
+    "items": [
+      {
+        "productName": "Laptop Gaming",
+        "productCategory": "Electronics",
+        "price": 15000000,
+        "quantity": 1
+      }
+    ]
+  }
+]
