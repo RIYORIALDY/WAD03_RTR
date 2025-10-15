@@ -1,6 +1,5 @@
 const usersService = require('../services/usersService');
 
-// POST /users/ - Create new user
 const createUser = (req, res) => {
   try {
     const newUser = usersService.createUser(req.body);
@@ -13,7 +12,6 @@ const createUser = (req, res) => {
   }
 };
 
-// GET /users/ - Get all users
 const getAllUsers = (req, res) => {
   try {
     const users = usersService.getAllUsers();
@@ -26,7 +24,6 @@ const getAllUsers = (req, res) => {
   }
 };
 
-// GET /users/:username - Get user by username
 const getUserByUsername = (req, res) => {
   try {
     const { username } = req.params;
