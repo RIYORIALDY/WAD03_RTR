@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const productsController = require('../controller/productsController');
-const sellerOnly = require('../src/middleware/sellerOnly');
+const productsController = require('../src/middleware/controller/productsController');
+const sellerOnly = require('../sellerOnly');
 
 // POST /products/ - Create product (Seller only)
 router.post('/', sellerOnly, productsController.createProduct);

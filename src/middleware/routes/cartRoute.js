@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const cartController = require('../controller/cartController');
-const buyerOnly = require('../src/middleware/buyerOnly');
+const cartController = require('../src/middleware/controller/cartController');
+const buyerOnly = require('../buyerOnly');
 
 // POST /carts/:username/add - Add to cart (Buyer only)
 router.post('/:username/add', buyerOnly, cartController.addToCart);
