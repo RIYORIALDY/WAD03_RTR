@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1760882618817" clover="3.2.0">
-  <project timestamp="1760882618817" name="All files">
-    <metrics statements="154" coveredstatements="32" conditionals="46" coveredconditionals="26" methods="37" coveredmethods="8" elements="237" coveredelements="66" complexity="0" loc="154" ncloc="154" packages="3" files="9" classes="9"/>
+<coverage generated="1760890766424" clover="3.2.0">
+  <project timestamp="1760890766424" name="All files">
+    <metrics statements="157" coveredstatements="45" conditionals="50" coveredconditionals="40" methods="38" coveredmethods="11" elements="245" coveredelements="96" complexity="0" loc="157" ncloc="157" packages="3" files="9" classes="9"/>
     <package name="controllers">
       <metrics statements="60" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="9" coveredmethods="0"/>
-      <file name="cartController.js" path="C:\Users\mtaqi\OneDrive\Desktop\RTR WAD\WAD03_RTR\controllers\cartController.js">
+      <file name="cartController.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\controllers\cartController.js">
         <metrics statements="24" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="3" coveredmethods="0"/>
         <line num="1" count="0" type="stmt"/>
         <line num="3" count="0" type="stmt"/>
@@ -31,7 +31,7 @@
         <line num="47" count="0" type="stmt"/>
         <line num="51" count="0" type="stmt"/>
       </file>
-      <file name="productsController.js" path="C:\Users\mtaqi\OneDrive\Desktop\RTR WAD\WAD03_RTR\controllers\productsController.js">
+      <file name="productsController.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\controllers\productsController.js">
         <metrics statements="18" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
         <line num="1" count="0" type="stmt"/>
         <line num="3" count="0" type="stmt"/>
@@ -52,7 +52,7 @@
         <line num="36" count="0" type="stmt"/>
         <line num="40" count="0" type="stmt"/>
       </file>
-      <file name="usersController.js" path="C:\Users\mtaqi\OneDrive\Desktop\RTR WAD\WAD03_RTR\controllers\usersController.js">
+      <file name="usersController.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\controllers\usersController.js">
         <metrics statements="18" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
         <line num="1" count="0" type="stmt"/>
         <line num="3" count="0" type="stmt"/>
@@ -76,7 +76,7 @@
     </package>
     <package name="repositories">
       <metrics statements="46" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="17" coveredmethods="0"/>
-      <file name="cartRepository.js" path="C:\Users\mtaqi\OneDrive\Desktop\RTR WAD\WAD03_RTR\repositories\cartRepository.js">
+      <file name="cartRepository.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\repositories\cartRepository.js">
         <metrics statements="20" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="7" coveredmethods="0"/>
         <line num="1" count="0" type="stmt"/>
         <line num="2" count="0" type="stmt"/>
@@ -99,7 +99,7 @@
         <line num="39" count="0" type="stmt"/>
         <line num="43" count="0" type="stmt"/>
       </file>
-      <file name="productsRepository.js" path="C:\Users\mtaqi\OneDrive\Desktop\RTR WAD\WAD03_RTR\repositories\productsRepository.js">
+      <file name="productsRepository.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\repositories\productsRepository.js">
         <metrics statements="13" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="0"/>
         <line num="1" count="0" type="stmt"/>
         <line num="2" count="0" type="stmt"/>
@@ -115,7 +115,7 @@
         <line num="25" count="0" type="stmt"/>
         <line num="29" count="0" type="stmt"/>
       </file>
-      <file name="usersRepository.js" path="C:\Users\mtaqi\OneDrive\Desktop\RTR WAD\WAD03_RTR\repositories\usersRepository.js">
+      <file name="usersRepository.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\repositories\usersRepository.js">
         <metrics statements="13" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="0"/>
         <line num="1" count="0" type="stmt"/>
         <line num="2" count="0" type="stmt"/>
@@ -133,8 +133,8 @@
       </file>
     </package>
     <package name="services">
-      <metrics statements="48" coveredstatements="32" conditionals="40" coveredconditionals="26" methods="11" coveredmethods="8"/>
-      <file name="cartService.js" path="C:\Users\mtaqi\OneDrive\Desktop\RTR WAD\WAD03_RTR\services\cartService.js">
+      <metrics statements="51" coveredstatements="45" conditionals="44" coveredconditionals="40" methods="12" coveredmethods="11"/>
+      <file name="cartService.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\services\cartService.js">
         <metrics statements="16" coveredstatements="16" conditionals="12" coveredconditionals="12" methods="5" coveredmethods="5"/>
         <line num="1" count="1" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
@@ -153,26 +153,29 @@
         <line num="29" count="1" type="stmt"/>
         <line num="32" count="1" type="stmt"/>
       </file>
-      <file name="productsService.js" path="C:\Users\mtaqi\OneDrive\Desktop\RTR WAD\WAD03_RTR\services\productsService.js">
-        <metrics statements="16" coveredstatements="0" conditionals="14" coveredconditionals="0" methods="3" coveredmethods="0"/>
-        <line num="1" count="0" type="stmt"/>
-        <line num="5" count="0" type="stmt"/>
-        <line num="7" count="0" type="cond" truecount="0" falsecount="6"/>
-        <line num="8" count="0" type="stmt"/>
-        <line num="11" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="15" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="16" count="0" type="stmt"/>
-        <line num="19" count="0" type="stmt"/>
-        <line num="26" count="0" type="stmt"/>
-        <line num="30" count="0" type="stmt"/>
-        <line num="34" count="0" type="stmt"/>
-        <line num="35" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="36" count="0" type="stmt"/>
-        <line num="38" count="0" type="stmt"/>
-        <line num="42" count="0" type="stmt"/>
+      <file name="productsService.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\services\productsService.js">
+        <metrics statements="19" coveredstatements="13" conditionals="18" coveredconditionals="14" methods="4" coveredmethods="3"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="5" count="5" type="stmt"/>
+        <line num="7" count="5" type="cond" truecount="5" falsecount="0"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="12" count="4" type="cond" truecount="4" falsecount="1"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="16" count="4" type="cond" truecount="4" falsecount="0"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="20" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="40" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="47" count="2" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
       </file>
-      <file name="usersService.js" path="C:\Users\mtaqi\OneDrive\Desktop\RTR WAD\WAD03_RTR\services\usersService.js">
+      <file name="usersService.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\services\usersService.js">
         <metrics statements="16" coveredstatements="16" conditionals="14" coveredconditionals="14" methods="3" coveredmethods="3"/>
         <line num="1" count="1" type="stmt"/>
         <line num="5" count="5" type="stmt"/>

@@ -4,12 +4,17 @@ class ProductsService {
   createProduct(productData) {
     const { productName, productCategory, price, owner } = productData;
 
-    if (!productName || !productCategory || !price || !owner) {
+    if (!productName || !productCategory || !owner) {
+      throw new Error('All fields are required: productName, productCategory, price, owner');
+    }
+
+    // Check if price exists and is valid
+    if (price === undefined || price === null || price === '') {
       throw new Error('All fields are required: productName, productCategory, price, owner');
     }
 
     if (isNaN(price) || price <= 0) {
-      throw new Error('Price must be a positive number');
+      throw new Error('Price must be greater than 0');
     }
 
     if (productsRepository.exists(productName)) {
@@ -36,6 +41,10 @@ class ProductsService {
       throw new Error('Product not found');
     }
     return product;
+  }
+
+  getProductsByOwner(owner) {
+    return productsRepository.findByOwner(owner);
   }
 }
 

@@ -125,6 +125,16 @@ npm test
 # atau
 yarn test
 ```
+### Run Tests FAIL
+
+<img width="940" height="598" alt="Image" src="https://github.com/user-attachments/assets/aba97656-2661-428e-8a53-ebe439b4636f" />
+
+<img width="940" height="492" alt="Image" src="https://github.com/user-attachments/assets/6f489c84-2d12-41be-97a1-576c1bc7af12" />
+
+
+### Run Tests PASS
+
+<img width="940" height="544" alt="Image" src="https://github.com/user-attachments/assets/47863852-afa9-4c69-9c26-1c538208c0e6" />
 
 ### Run Tests dengan Watch Mode
 ```bash
