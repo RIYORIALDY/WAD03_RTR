@@ -11,7 +11,13 @@
     "dev": "nodemon server.js",
     "seed": "node seedDatabase.js"
   },
-  "keywords": ["ecommerce", "express", "mvc", "mongodb", "jest"],
+  "keywords": [
+    "ecommerce",
+    "express",
+    "mvc",
+    "mongodb",
+    "jest"
+  ],
   "author": "WAD03_RTR",
   "license": "ISC",
   "type": "commonjs",
@@ -36,6 +42,7 @@
   "dependencies": {
     "express": "^5.1.0",
     "mongoose": "^8.19.1",
+    "save-dev": "^0.0.1-security",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
