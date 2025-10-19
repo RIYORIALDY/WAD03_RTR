@@ -1,15 +1,26 @@
 const express = require('express');
+const database = require('./database');
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Koneksi ke database
+database.connect()
+  .then(() => {
+    console.log('✅ Database siap digunakan');
+  })
+  .catch((error) => {
+    console.error('❌ Gagal koneksi database:', error.message);
+    // Tidak exit process, biarkan app tetap jalan untuk development
+  });
 
 // Middleware untuk parsing JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Import routes
-const usersRoute = require('./src/routes/usersRoute');
-const productsRoute = require('./src/routes/productsRoute');
-const cartRoute = require('./src/routes/cartRoute');
+const usersRoute = require('./routes/usersRoutes');
+const productsRoute = require('./routes/productsRoute');
+const cartRoute = require('./routes/cartRoute');
 
 // Basic route
 app.get('/', (req, res) => {
