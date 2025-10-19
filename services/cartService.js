@@ -1,77 +1,37 @@
 const cartRepository = require('../repositories/cartRepository');
-const productsRepository = require('../repositories/productsRepository');
-
-class CartService {
-  addToCart(username, productName) {
-    if (!productName) {
-      throw new Error('productName is required');
-    }
-
-    const product = productsRepository.findByName(productName);
-    if (!product) {
-      throw new Error('Product not found');
-    }
-
-    let userCart = cartRepository.findByUsername(username);
-
-    if (!userCart) {
-      userCart = cartRepository.create(username);
-    }
-
-    const existingItem = userCart.items.find(item => item.productName === productName);
-
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      userCart.items.push({
-        productName,
-        productCategory: product.productCategory,
-        price: product.price,
-        quantity: 1
-      });
-    }
-
-    return cartRepository.update(userCart);
-  }
-
-  removeFromCart(username, productName) {
-    if (!productName) {
-      throw new Error('productName is required');
-    }
-
-    const userCart = cartRepository.findByUsername(username);
-
-    if (!userCart) {
-      throw new Error('Cart not found');
-    }
-
-    const itemIndex = userCart.items.findIndex(item => item.productName === productName);
-
-    if (itemIndex === -1) {
-      throw new Error('Product not found in cart');
-    }
-
-    if (userCart.items[itemIndex].quantity > 1) {
-      userCart.items[itemIndex].quantity -= 1;
-    } else {
-      userCart.items.splice(itemIndex, 1);
-    }
-
-    return cartRepository.update(userCart);
-  }
-
-  getCart(username) {
-    let userCart = cartRepository.findByUsername(username);
-
-    if (!userCart) {
-      userCart = {
-        username,
-        items: []
-      };
-    }
-
-    return userCart;
-  }
+function getCartByUsername(username) {
+  const cart = cartRepository.findByUsername(username);
+  if (!cart) throw new Error('Cart not found');
+  return cart;
 }
 
-module.exports = new CartService();
+function validateItem(item) {
+  if (!item || !item.productName || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
+    throw new Error('Invalid item data');
+  }
+  if (item.quantity <= 0) throw new Error('Quantity must be greater than 0');
+}
+
+function addItemToCart(username, item) {
+  validateItem(item);
+  const updated = cartRepository.addItem(username, item);
+  return updated;
+}
+
+function removeItemFromCart(username, productName) {
+  if (!productName) throw new Error('Product name is required');
+  const updated = cartRepository.removeItem(username, productName);
+  return updated;
+}
+
+function clearCart(username) {
+  const result = cartRepository.clearCart(username);
+  return result;
+}
+
+module.exports = {
+  getCartByUsername,
+  addItemToCart,
+  removeItemFromCart,
+  clearCart
+};
