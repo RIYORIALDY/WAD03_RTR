@@ -16,7 +16,7 @@ const mockProductsRepository = {
 
 jest.mock('../repositories/productsRepository', () => mockProductsRepository);
 
-const productsService = require('../services/productsService');
+const productsService = require('./productsService');
 
 describe('Products Service - Unit Tests', () => {
   beforeEach(() => {

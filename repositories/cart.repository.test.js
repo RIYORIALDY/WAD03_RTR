@@ -1,7 +1,7 @@
 const { describe, test, expect, beforeAll, afterAll, beforeEach } = require('@jest/globals');
 const mongoose = require('mongoose');
 const Cart = require('../models/Cart');
-const cartRepository = require('../repositories/cartRepository');
+const cartRepository = require('./cartRepository');
 
 /**
  * Integration Test untuk Cart Repository

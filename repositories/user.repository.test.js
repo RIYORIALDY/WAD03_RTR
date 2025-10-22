@@ -1,7 +1,7 @@
 const { describe, test, expect, beforeAll, afterAll, beforeEach } = require('@jest/globals');
 const mongoose = require('mongoose');
 const User = require('../models/User');
-const usersRepository = require('../repositories/usersRepository');
+const usersRepository = require('./usersRepository');
 
 /**
  * Integration Test untuk Users Repository
