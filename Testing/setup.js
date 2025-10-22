@@ -5,7 +5,6 @@
 
 // Set environment untuk testing
 process.env.NODE_ENV = 'test';
-process.env.MONGODB_URI = 'mongodb://localhost:27017/ecommerce_test';
 
 // Mock console untuk mengurangi noise saat testing
 global.console = {
@@ -17,5 +16,5 @@ global.console = {
   debug: jest.fn(),
 };
 
-// Timeout untuk async operations
-jest.setTimeout(10000);
+// Timeout untuk async operations - increased for MongoDB operations
+jest.setTimeout(30000);

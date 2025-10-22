@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.14% </span>
+                <span class="strong">64.28% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>2/28</span>
+                <span class='fraction'>18/28</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.14% </span>
+                <span class="strong">64.28% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/28</span>
+                <span class='fraction'>18/28</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -151,9 +151,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -166,9 +166,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -181,9 +181,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -196,10 +196,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -212,9 +212,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -230,10 +230,10 @@ class ProductsRepository {
    * Get all products from database
    * @returns {Promise&lt;Array&gt;} Array of products
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync findAll() {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const products = <span class="cstat-no" title="statement not covered" >await Product.find({}).sort({ createdAt: -1 });</span>
-<span class="cstat-no" title="statement not covered" >      return products;</span>
+  async findAll() {
+    try {
+      const products = await Product.find({}).sort({ createdAt: -1 });
+      return products;
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Error in productsRepository.findAll:', error.message);</span>
 <span class="cstat-no" title="statement not covered" >      throw error;</span>
@@ -245,10 +245,10 @@ class ProductsRepository {
    * @param {string} productName - Product name to find
    * @returns {Promise&lt;Object|null&gt;} Product object or null
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync findByName(productName) {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const product = <span class="cstat-no" title="statement not covered" >await Product.findOne({ productName });</span>
-<span class="cstat-no" title="statement not covered" >      return product;</span>
+  async findByName(productName) {
+    try {
+      const product = await Product.findOne({ productName });
+      return product;
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Error in productsRepository.findByName:', error.message);</span>
 <span class="cstat-no" title="statement not covered" >      throw error;</span>
@@ -260,10 +260,10 @@ class ProductsRepository {
    * @param {string} owner - Owner username
    * @returns {Promise&lt;Array&gt;} Array of products
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync findByOwner(owner) {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const products = <span class="cstat-no" title="statement not covered" >await Product.find({ owner }).sort({ createdAt: -1 });</span>
-<span class="cstat-no" title="statement not covered" >      return products;</span>
+  async findByOwner(owner) {
+    try {
+      const products = await Product.find({ owner }).sort({ createdAt: -1 });
+      return products;
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Error in productsRepository.findByOwner:', error.message);</span>
 <span class="cstat-no" title="statement not covered" >      throw error;</span>
@@ -275,11 +275,11 @@ class ProductsRepository {
    * @param {Object} productData - Product data to save
    * @returns {Promise&lt;Object&gt;} Saved product object
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync save(productData) {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const product = <span class="cstat-no" title="statement not covered" >new Product(productData);</span>
-      const savedProduct = <span class="cstat-no" title="statement not covered" >await product.save();</span>
-<span class="cstat-no" title="statement not covered" >      return savedProduct;</span>
+  async save(productData) {
+    try {
+      const product = new Product(productData);
+      const savedProduct = await product.save();
+      return savedProduct;
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Error in productsRepository.save:', error.message);</span>
 <span class="cstat-no" title="statement not covered" >      throw error;</span>
@@ -291,10 +291,10 @@ class ProductsRepository {
    * @param {string} productName - Product name to check
    * @returns {Promise&lt;boolean&gt;} True if exists, false otherwise
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync exists(productName) {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const product = <span class="cstat-no" title="statement not covered" >await Product.findOne({ productName });</span>
-<span class="cstat-no" title="statement not covered" >      return product !== null;</span>
+  async exists(productName) {
+    try {
+      const product = await Product.findOne({ productName });
+      return product !== null;
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Error in productsRepository.exists:', error.message);</span>
 <span class="cstat-no" title="statement not covered" >      throw error;</span>
@@ -310,7 +310,7 @@ module.exports = new ProductsRepository();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-10-22T10:32:54.258Z
+                at 2025-10-22T11:18:57.124Z
             </div>
         <script src="../prettify.js"></script>
         <script>

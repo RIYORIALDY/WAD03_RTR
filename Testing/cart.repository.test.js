@@ -9,12 +9,17 @@ const cartRepository = require('../repositories/cartRepository');
 
 describe('Cart Repository - Integration Tests', () => {
   beforeAll(async () => {
-    await mongoose.connect(process.env.MONGODB_URI);
-  });
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(process.env.MONGODB_URI);
+    }
+  }, 30000);
 
   afterAll(async () => {
-    await mongoose.connection.close();
-  });
+    await Cart.deleteMany({});
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.close();
+    }
+  }, 30000);
 
   beforeEach(async () => {
     await Cart.deleteMany({});

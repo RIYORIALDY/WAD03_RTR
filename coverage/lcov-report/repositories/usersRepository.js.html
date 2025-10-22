@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.69% </span>
+                <span class="strong">65.21% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>2/23</span>
+                <span class='fraction'>15/23</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.69% </span>
+                <span class="strong">65.21% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/23</span>
+                <span class='fraction'>15/23</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -136,9 +136,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -151,9 +151,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -166,10 +166,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -182,9 +182,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -200,10 +200,10 @@ class UsersRepository {
    * Get all users from database
    * @returns {Promise&lt;Array&gt;} Array of users
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync findAll() {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const users = <span class="cstat-no" title="statement not covered" >await User.find({}).sort({ createdAt: -1 });</span>
-<span class="cstat-no" title="statement not covered" >      return users;</span>
+  async findAll() {
+    try {
+      const users = await User.find({}).sort({ createdAt: -1 });
+      return users;
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Error in usersRepository.findAll:', error.message);</span>
 <span class="cstat-no" title="statement not covered" >      throw error;</span>
@@ -215,10 +215,10 @@ class UsersRepository {
    * @param {string} username - Username to find
    * @returns {Promise&lt;Object|null&gt;} User object or null
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync findByUsername(username) {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const user = <span class="cstat-no" title="statement not covered" >await User.findOne({ username });</span>
-<span class="cstat-no" title="statement not covered" >      return user;</span>
+  async findByUsername(username) {
+    try {
+      const user = await User.findOne({ username });
+      return user;
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Error in usersRepository.findByUsername:', error.message);</span>
 <span class="cstat-no" title="statement not covered" >      throw error;</span>
@@ -230,11 +230,11 @@ class UsersRepository {
    * @param {Object} userData - User data to save
    * @returns {Promise&lt;Object&gt;} Saved user object
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync save(userData) {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const user = <span class="cstat-no" title="statement not covered" >new User(userData);</span>
-      const savedUser = <span class="cstat-no" title="statement not covered" >await user.save();</span>
-<span class="cstat-no" title="statement not covered" >      return savedUser;</span>
+  async save(userData) {
+    try {
+      const user = new User(userData);
+      const savedUser = await user.save();
+      return savedUser;
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Error in usersRepository.save:', error.message);</span>
 <span class="cstat-no" title="statement not covered" >      throw error;</span>
@@ -246,10 +246,10 @@ class UsersRepository {
    * @param {string} username - Username to check
    * @returns {Promise&lt;boolean&gt;} True if exists, false otherwise
    */
-<span class="fstat-no" title="function not covered" >  as</span>ync exists(username) {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const user = <span class="cstat-no" title="statement not covered" >await User.findOne({ username });</span>
-<span class="cstat-no" title="statement not covered" >      return user !== null;</span>
+  async exists(username) {
+    try {
+      const user = await User.findOne({ username });
+      return user !== null;
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Error in usersRepository.exists:', error.message);</span>
 <span class="cstat-no" title="statement not covered" >      throw error;</span>
@@ -265,7 +265,7 @@ module.exports = new UsersRepository();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-10-22T10:32:54.258Z
+                at 2025-10-22T11:18:57.124Z
             </div>
         <script src="../prettify.js"></script>
         <script>

@@ -11,12 +11,17 @@ const usersRepository = require('../repositories/usersRepository');
 describe('Users Repository - Integration Tests', () => {
   // Setup test database
   beforeAll(async () => {
-    await mongoose.connect(process.env.MONGODB_URI);
-  });
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(process.env.MONGODB_URI);
+    }
+  }, 30000);
 
   afterAll(async () => {
-    await mongoose.connection.close();
-  });
+    await User.deleteMany({});
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.close();
+    }
+  }, 30000);
 
   beforeEach(async () => {
     // Clear users collection sebelum setiap test

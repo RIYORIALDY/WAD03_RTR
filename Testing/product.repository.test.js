@@ -9,12 +9,17 @@ const productsRepository = require('../repositories/productsRepository');
 
 describe('Products Repository - Integration Tests', () => {
   beforeAll(async () => {
-    await mongoose.connect(process.env.MONGODB_URI);
-  });
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(process.env.MONGODB_URI);
+    }
+  }, 30000);
 
   afterAll(async () => {
-    await mongoose.connection.close();
-  });
+    await Product.deleteMany({});
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.close();
+    }
+  }, 30000);
 
   beforeEach(async () => {
     await Product.deleteMany({});
