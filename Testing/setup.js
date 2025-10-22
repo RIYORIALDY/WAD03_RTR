@@ -16,5 +16,5 @@ global.console = {
   debug: jest.fn(),
 };
 
-// Timeout untuk async operations - increased for MongoDB operations
+// Timeout untuk async operations
 jest.setTimeout(30000);

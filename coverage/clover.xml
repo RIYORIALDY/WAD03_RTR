@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1761131937212" clover="3.2.0">
-  <project timestamp="1761131937212" name="All files">
-    <metrics statements="244" coveredstatements="201" conditionals="64" coveredconditionals="54" methods="42" coveredmethods="37" elements="350" coveredelements="292" complexity="0" loc="244" ncloc="244" packages="3" files="9" classes="9"/>
+<coverage generated="1761132773802" clover="3.2.0">
+  <project timestamp="1761132773802" name="All files">
+    <metrics statements="244" coveredstatements="205" conditionals="64" coveredconditionals="54" methods="42" coveredmethods="37" elements="350" coveredelements="296" complexity="0" loc="244" ncloc="244" packages="3" files="9" classes="9"/>
     <package name="controllers">
       <metrics statements="71" coveredstatements="70" conditionals="4" coveredconditionals="3" methods="11" coveredmethods="11"/>
       <file name="cartController.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\controllers\cartController.js">
@@ -86,9 +86,9 @@
       </file>
     </package>
     <package name="repositories">
-      <metrics statements="86" coveredstatements="59" conditionals="6" coveredconditionals="6" methods="17" coveredmethods="14"/>
+      <metrics statements="86" coveredstatements="63" conditionals="6" coveredconditionals="6" methods="17" coveredmethods="14"/>
       <file name="cartRepository.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\repositories\cartRepository.js">
-        <metrics statements="35" coveredstatements="26" conditionals="6" coveredconditionals="6" methods="8" coveredmethods="5"/>
+        <metrics statements="35" coveredstatements="28" conditionals="6" coveredconditionals="6" methods="8" coveredmethods="5"/>
         <line num="1" count="1" type="stmt"/>
         <line num="9" count="2" type="stmt"/>
         <line num="10" count="2" type="stmt"/>
@@ -104,9 +104,9 @@
         <line num="50" count="3" type="stmt"/>
         <line num="51" count="3" type="stmt"/>
         <line num="57" count="3" type="stmt"/>
-        <line num="58" count="3" type="stmt"/>
-        <line num="60" count="0" type="stmt"/>
-        <line num="61" count="0" type="stmt"/>
+        <line num="58" count="2" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
         <line num="71" count="2" type="stmt"/>
         <line num="73" count="2" type="cond" truecount="4" falsecount="0"/>
         <line num="74" count="1" type="stmt"/>
@@ -157,7 +157,7 @@
         <line num="80" count="1" type="stmt"/>
       </file>
       <file name="usersRepository.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\repositories\usersRepository.js">
-        <metrics statements="23" coveredstatements="15" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
+        <metrics statements="23" coveredstatements="17" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
         <line num="1" count="2" type="stmt"/>
         <line num="9" count="2" type="stmt"/>
         <line num="10" count="2" type="stmt"/>
@@ -172,9 +172,9 @@
         <line num="39" count="3" type="stmt"/>
         <line num="40" count="3" type="stmt"/>
         <line num="41" count="3" type="stmt"/>
-        <line num="42" count="3" type="stmt"/>
-        <line num="44" count="0" type="stmt"/>
-        <line num="45" count="0" type="stmt"/>
+        <line num="42" count="2" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
         <line num="55" count="2" type="stmt"/>
         <line num="56" count="2" type="stmt"/>
         <line num="57" count="2" type="stmt"/>

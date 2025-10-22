@@ -12,6 +12,8 @@ describe('Cart Repository - Integration Tests', () => {
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(process.env.MONGODB_URI);
     }
+    // Ensure indexes are created
+    await Cart.createIndexes();
   }, 30000);
 
   afterAll(async () => {

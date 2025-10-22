@@ -14,6 +14,8 @@ describe('Users Repository - Integration Tests', () => {
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(process.env.MONGODB_URI);
     }
+    // Ensure indexes are created
+    await User.createIndexes();
   }, 30000);
 
   afterAll(async () => {

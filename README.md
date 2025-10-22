@@ -134,7 +134,11 @@ yarn test
 
 ### Run Tests PASS
 
-<img width="940" height="544" alt="Image" src="https://github.com/user-attachments/assets/47863852-afa9-4c69-9c26-1c538208c0e6" />
+<img width="282" height="176" alt="Image" src="https://github.com/user-attachments/assets/e23538a0-54ca-4250-8a47-a051541fc6f9" />
+
+
+<img width="879" height="163" alt="Image" src="https://github.com/user-attachments/assets/a7c26c18-f0e2-4ec9-a794-40ad1409e8c5" />
+
 
 ### Run Tests dengan Watch Mode
 ```bash
