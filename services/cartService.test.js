@@ -15,7 +15,7 @@ const mockCartRepository = {
 
 jest.mock('../repositories/cartRepository', () => mockCartRepository);
 
-const cartService = require('../services/cartService');
+const cartService = require('./cartService');
 
 describe('Cart Service - Unit Tests', () => {
   beforeEach(() => {

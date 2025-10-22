@@ -1,7 +1,7 @@
 const { describe, test, expect, beforeAll, afterAll, beforeEach } = require('@jest/globals');
 const mongoose = require('mongoose');
 const Product = require('../models/Product');
-const productsRepository = require('../repositories/productsRepository');
+const productsRepository = require('./productsRepository');
 
 /**
  * Integration Test untuk Products Repository
