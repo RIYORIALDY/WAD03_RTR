@@ -1,8 +1,8 @@
 const usersService = require('../services/usersService');
 
-const createUser = (req, res) => {
+const createUser = async (req, res) => {
   try {
-    const newUser = usersService.createUser(req.body);
+    const newUser = await usersService.createUser(req.body);
     res.status(201).json({ 
       message: 'User created successfully', 
       data: newUser 
@@ -12,9 +12,9 @@ const createUser = (req, res) => {
   }
 };
 
-const getAllUsers = (req, res) => {
+const getAllUsers = async (req, res) => {
   try {
-    const users = usersService.getAllUsers();
+    const users = await usersService.getAllUsers();
     res.status(200).json({ 
       message: 'Users retrieved successfully', 
       data: users 
@@ -24,10 +24,10 @@ const getAllUsers = (req, res) => {
   }
 };
 
-const getUserByUsername = (req, res) => {
+const getUserByUsername = async (req, res) => {
   try {
     const { username } = req.params;
-    const user = usersService.getUserByUsername(username);
+    const user = await usersService.getUserByUsername(username);
     res.status(200).json({ 
       message: 'User retrieved successfully', 
       data: user 

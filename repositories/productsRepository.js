@@ -1,28 +1,79 @@
-const fs = require('fs');
-const path = require('path');
-
-const productsFilePath = path.join(__dirname, '../../data/products.json');
+const Product = require('../models/Product');
 
 class ProductsRepository {
-  findAll() {
-    const data = fs.readFileSync(productsFilePath, 'utf8');
-    return JSON.parse(data);
+  /**
+   * Get all products from database
+   * @returns {Promise<Array>} Array of products
+   */
+  async findAll() {
+    try {
+      const products = await Product.find({}).sort({ createdAt: -1 });
+      return products;
+    } catch (error) {
+      console.error('Error in productsRepository.findAll:', error.message);
+      throw error;
+    }
   }
 
-  findByName(productName) {
-    const products = this.findAll();
-    return products.find(p => p.productName === productName);
+  /**
+   * Find product by name
+   * @param {string} productName - Product name to find
+   * @returns {Promise<Object|null>} Product object or null
+   */
+  async findByName(productName) {
+    try {
+      const product = await Product.findOne({ productName });
+      return product;
+    } catch (error) {
+      console.error('Error in productsRepository.findByName:', error.message);
+      throw error;
+    }
   }
 
-  save(product) {
-    const products = this.findAll();
-    products.push(product);
-    fs.writeFileSync(productsFilePath, JSON.stringify(products, null, 2));
-    return product;
+  /**
+   * Find products by owner username
+   * @param {string} owner - Owner username
+   * @returns {Promise<Array>} Array of products
+   */
+  async findByOwner(owner) {
+    try {
+      const products = await Product.find({ owner }).sort({ createdAt: -1 });
+      return products;
+    } catch (error) {
+      console.error('Error in productsRepository.findByOwner:', error.message);
+      throw error;
+    }
   }
 
-  exists(productName) {
-    return this.findByName(productName) !== undefined;
+  /**
+   * Save new product to database
+   * @param {Object} productData - Product data to save
+   * @returns {Promise<Object>} Saved product object
+   */
+  async save(productData) {
+    try {
+      const product = new Product(productData);
+      const savedProduct = await product.save();
+      return savedProduct;
+    } catch (error) {
+      console.error('Error in productsRepository.save:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Check if product exists by name
+   * @param {string} productName - Product name to check
+   * @returns {Promise<boolean>} True if exists, false otherwise
+   */
+  async exists(productName) {
+    try {
+      const product = await Product.findOne({ productName });
+      return product !== null;
+    } catch (error) {
+      console.error('Error in productsRepository.exists:', error.message);
+      throw error;
+    }
   }
 }
 

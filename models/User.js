@@ -37,8 +37,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Index untuk performa query
-userSchema.index({ username: 1 });
+// Index untuk performa query (username sudah unique, tidak perlu index lagi)
 userSchema.index({ email: 1 });
 
 const User = mongoose.model('User', userSchema);

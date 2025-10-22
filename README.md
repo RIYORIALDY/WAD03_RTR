@@ -275,13 +275,6 @@ Unit tests menggunakan Jest.js untuk ensure code quality.
 - ✅ Mock dependencies untuk testing
 - ✅ Code documentation
 
-## 📖 Learning Resources
-
-Proyek ini dibuat berdasarkan materi:
-- **Session 11**: Database Integration (MongoDB, Mongoose, ODM)
-- **Session 12**: Testing (Jest.js, Unit Testing, AAA Pattern)
-
-Lihat: `Session 11 & 12 _ Database & Testing.pptx`
 
 ## 🤝 Contributing
 

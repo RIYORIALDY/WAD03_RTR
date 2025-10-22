@@ -9,6 +9,9 @@ router.post('/', sellerOnly, productsController.createProduct);
 // GET /products/ - Get all products (Public)
 router.get('/', productsController.getAllProducts);
 
+// GET /products/owner/:owner - Get products by owner (Public)
+router.get('/owner/:owner', productsController.getProductsByOwner);
+
 // GET /products/:product_name - Get product by name (Public)
 router.get('/:product_name', productsController.getProductByName);
 

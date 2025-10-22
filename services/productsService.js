@@ -1,7 +1,7 @@
 const productsRepository = require('../repositories/productsRepository');
 
 class ProductsService {
-  createProduct(productData) {
+  async createProduct(productData) {
     const { productName, productCategory, price, owner } = productData;
 
     if (!productName || !productCategory || !owner) {
@@ -17,7 +17,8 @@ class ProductsService {
       throw new Error('Price must be greater than 0');
     }
 
-    if (productsRepository.exists(productName)) {
+    const exists = await productsRepository.exists(productName);
+    if (exists) {
       throw new Error('Product name already exists');
     }
 
@@ -28,23 +29,23 @@ class ProductsService {
       owner
     };
 
-    return productsRepository.save(newProduct);
+    return await productsRepository.save(newProduct);
   }
 
-  getAllProducts() {
-    return productsRepository.findAll();
+  async getAllProducts() {
+    return await productsRepository.findAll();
   }
 
-  getProductByName(productName) {
-    const product = productsRepository.findByName(productName);
+  async getProductByName(productName) {
+    const product = await productsRepository.findByName(productName);
     if (!product) {
       throw new Error('Product not found');
     }
     return product;
   }
 
-  getProductsByOwner(owner) {
-    return productsRepository.findByOwner(owner);
+  async getProductsByOwner(owner) {
+    return await productsRepository.findByOwner(owner);
   }
 }
 

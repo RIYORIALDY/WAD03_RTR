@@ -24,7 +24,7 @@ describe('Products Service - Unit Tests', () => {
   });
 
   describe('createProduct', () => {
-    test('[POSITIVE] should create product successfully dengan data valid', () => {
+    test('[POSITIVE] should create product successfully dengan data valid', async () => {
       // Arrange
       const productData = {
         productName: 'Laptop Gaming',
@@ -33,17 +33,18 @@ describe('Products Service - Unit Tests', () => {
         owner: 'seller1'
       };
       
-      mockProductsRepository.save.mockReturnValue(productData);
+      mockProductsRepository.exists.mockResolvedValue(false);
+      mockProductsRepository.save.mockResolvedValue(productData);
 
       // Act
-      const result = productsService.createProduct(productData);
+      const result = await productsService.createProduct(productData);
 
       // Assert
       expect(result).toEqual(productData);
       expect(mockProductsRepository.save).toHaveBeenCalledWith(productData);
     });
 
-    test('[NEGATIVE] should throw error jika productName kosong', () => {
+    test('[NEGATIVE] should throw error jika productName kosong', async () => {
       // Arrange
       const invalidData = {
         productName: '',
@@ -53,12 +54,12 @@ describe('Products Service - Unit Tests', () => {
       };
 
       // Act & Assert
-      expect(() => {
-        productsService.createProduct(invalidData);
-      }).toThrow('All fields are required');
+      await expect(async () => {
+        await productsService.createProduct(invalidData);
+      }).rejects.toThrow('All fields are required');
     });
 
-    test('[NEGATIVE] should throw error jika price negatif', () => {
+    test('[NEGATIVE] should throw error jika price negatif', async () => {
       // Arrange
       const invalidData = {
         productName: 'Laptop',
@@ -68,12 +69,12 @@ describe('Products Service - Unit Tests', () => {
       };
 
       // Act & Assert
-      expect(() => {
-        productsService.createProduct(invalidData);
-      }).toThrow('Price must be greater than 0');
+      await expect(async () => {
+        await productsService.createProduct(invalidData);
+      }).rejects.toThrow('Price must be greater than 0');
     });
 
-    test('[BOUNDARY] should throw error jika price adalah 0', () => {
+    test('[BOUNDARY] should throw error jika price adalah 0', async () => {
       // Arrange
       const invalidData = {
         productName: 'Laptop',
@@ -83,12 +84,12 @@ describe('Products Service - Unit Tests', () => {
       };
 
       // Act & Assert
-      expect(() => {
-        productsService.createProduct(invalidData);
-      }).toThrow('Price must be greater than 0');
+      await expect(async () => {
+        await productsService.createProduct(invalidData);
+      }).rejects.toThrow('Price must be greater than 0');
     });
 
-    test('[BOUNDARY] should accept price dengan nilai besar', () => {
+    test('[BOUNDARY] should accept price dengan nilai besar', async () => {
       // Arrange
       const productData = {
         productName: 'Luxury Car',
@@ -97,10 +98,11 @@ describe('Products Service - Unit Tests', () => {
         owner: 'seller1'
       };
       
-      mockProductsRepository.save.mockReturnValue(productData);
+      mockProductsRepository.exists.mockResolvedValue(false);
+      mockProductsRepository.save.mockResolvedValue(productData);
 
       // Act
-      const result = productsService.createProduct(productData);
+      const result = await productsService.createProduct(productData);
 
       // Assert
       expect(result.price).toBe(5000000000);
@@ -108,29 +110,29 @@ describe('Products Service - Unit Tests', () => {
   });
 
   describe('getAllProducts', () => {
-    test('[POSITIVE] should return semua products', () => {
+    test('[POSITIVE] should return semua products', async () => {
       // Arrange
       const mockProducts = [
         { productName: 'Product 1', price: 10000 },
         { productName: 'Product 2', price: 20000 }
       ];
       
-      mockProductsRepository.findAll.mockReturnValue(mockProducts);
+      mockProductsRepository.findAll.mockResolvedValue(mockProducts);
 
       // Act
-      const result = productsService.getAllProducts();
+      const result = await productsService.getAllProducts();
 
       // Assert
       expect(result).toEqual(mockProducts);
       expect(result).toHaveLength(2);
     });
 
-    test('[BOUNDARY] should return empty array jika tidak ada products', () => {
+    test('[BOUNDARY] should return empty array jika tidak ada products', async () => {
       // Arrange
-      mockProductsRepository.findAll.mockReturnValue([]);
+      mockProductsRepository.findAll.mockResolvedValue([]);
 
       // Act
-      const result = productsService.getAllProducts();
+      const result = await productsService.getAllProducts();
 
       // Assert
       expect(result).toEqual([]);
@@ -139,29 +141,29 @@ describe('Products Service - Unit Tests', () => {
   });
 
   describe('getProductsByOwner', () => {
-    test('[POSITIVE] should return products milik owner tertentu', () => {
+    test('[POSITIVE] should return products milik owner tertentu', async () => {
       // Arrange
       const mockProducts = [
         { productName: 'Product 1', owner: 'seller1' },
         { productName: 'Product 2', owner: 'seller1' }
       ];
       
-      mockProductsRepository.findByOwner.mockReturnValue(mockProducts);
+      mockProductsRepository.findByOwner.mockResolvedValue(mockProducts);
 
       // Act
-      const result = productsService.getProductsByOwner('seller1');
+      const result = await productsService.getProductsByOwner('seller1');
 
       // Assert
       expect(result).toEqual(mockProducts);
       expect(mockProductsRepository.findByOwner).toHaveBeenCalledWith('seller1');
     });
 
-    test('[BOUNDARY] should return empty array jika owner tidak punya products', () => {
+    test('[BOUNDARY] should return empty array jika owner tidak punya products', async () => {
       // Arrange
-      mockProductsRepository.findByOwner.mockReturnValue([]);
+      mockProductsRepository.findByOwner.mockResolvedValue([]);
 
       // Act
-      const result = productsService.getProductsByOwner('seller2');
+      const result = await productsService.getProductsByOwner('seller2');
 
       // Assert
       expect(result).toEqual([]);

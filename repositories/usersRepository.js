@@ -1,28 +1,64 @@
-const fs = require('fs');
-const path = require('path');
-
-const usersFilePath = path.join(__dirname, '../../data/users.json');
+const User = require('../models/User');
 
 class UsersRepository {
-  findAll() {
-    const data = fs.readFileSync(usersFilePath, 'utf8');
-    return JSON.parse(data);
+  /**
+   * Get all users from database
+   * @returns {Promise<Array>} Array of users
+   */
+  async findAll() {
+    try {
+      const users = await User.find({}).sort({ createdAt: -1 });
+      return users;
+    } catch (error) {
+      console.error('Error in usersRepository.findAll:', error.message);
+      throw error;
+    }
   }
 
-  findByUsername(username) {
-    const users = this.findAll();
-    return users.find(u => u.username === username);
+  /**
+   * Find user by username
+   * @param {string} username - Username to find
+   * @returns {Promise<Object|null>} User object or null
+   */
+  async findByUsername(username) {
+    try {
+      const user = await User.findOne({ username });
+      return user;
+    } catch (error) {
+      console.error('Error in usersRepository.findByUsername:', error.message);
+      throw error;
+    }
   }
 
-  save(user) {
-    const users = this.findAll();
-    users.push(user);
-    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-    return user;
+  /**
+   * Save new user to database
+   * @param {Object} userData - User data to save
+   * @returns {Promise<Object>} Saved user object
+   */
+  async save(userData) {
+    try {
+      const user = new User(userData);
+      const savedUser = await user.save();
+      return savedUser;
+    } catch (error) {
+      console.error('Error in usersRepository.save:', error.message);
+      throw error;
+    }
   }
 
-  exists(username) {
-    return this.findByUsername(username) !== undefined;
+  /**
+   * Check if user exists by username
+   * @param {string} username - Username to check
+   * @returns {Promise<boolean>} True if exists, false otherwise
+   */
+  async exists(username) {
+    try {
+      const user = await User.findOne({ username });
+      return user !== null;
+    } catch (error) {
+      console.error('Error in usersRepository.exists:', error.message);
+      throw error;
+    }
   }
 }
 

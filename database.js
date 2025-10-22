@@ -15,10 +15,8 @@ class Database {
         return this.connection;
       }
 
-      this.connection = await mongoose.connect(MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-      });
+      // Removed deprecated options: useNewUrlParser and useUnifiedTopology
+      this.connection = await mongoose.connect(MONGODB_URI);
 
       console.log('✅ Database MongoDB berhasil terkoneksi ke:', MONGODB_URI);
       return this.connection;

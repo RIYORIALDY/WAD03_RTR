@@ -3,13 +3,16 @@ const router = express.Router();
 const cartController = require('../controllers/cartController');
 const buyerOnly = require('../middleware/buyerOnly');
 
-// POST /carts/:username/add - Add to cart (Buyer only)
-router.post('/:username/add', buyerOnly, cartController.addToCart);
-
-// POST /carts/:username/remove - Remove from cart (Buyer only)
-router.post('/:username/remove', buyerOnly, cartController.removeFromCart);
-
 // GET /carts/:username - Get cart (Buyer only)
 router.get('/:username', buyerOnly, cartController.getCart);
+
+// POST /carts/:username/items - Add item to cart (Buyer only)
+router.post('/:username/items', buyerOnly, cartController.addItemToCart);
+
+// DELETE /carts/:username/items/:productName - Remove item from cart (Buyer only)
+router.delete('/:username/items/:productName', buyerOnly, cartController.removeItemFromCart);
+
+// DELETE /carts/:username - Clear cart (Buyer only)
+router.delete('/:username', buyerOnly, cartController.clearCart);
 
 module.exports = router;

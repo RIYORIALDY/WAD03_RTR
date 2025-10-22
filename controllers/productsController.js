@@ -1,8 +1,8 @@
 const productsService = require('../services/productsService');
 
-const createProduct = (req, res) => {
+const createProduct = async (req, res) => {
   try {
-    const newProduct = productsService.createProduct(req.body);
+    const newProduct = await productsService.createProduct(req.body);
     res.status(201).json({ 
       message: 'Product created successfully', 
       data: newProduct 
@@ -12,9 +12,9 @@ const createProduct = (req, res) => {
   }
 };
 
-const getAllProducts = (req, res) => {
+const getAllProducts = async (req, res) => {
   try {
-    const products = productsService.getAllProducts();
+    const products = await productsService.getAllProducts();
     res.status(200).json({ 
       message: 'Products retrieved successfully', 
       data: products 
@@ -24,10 +24,10 @@ const getAllProducts = (req, res) => {
   }
 };
 
-const getProductByName = (req, res) => {
+const getProductByName = async (req, res) => {
   try {
     const { product_name } = req.params;
-    const product = productsService.getProductByName(product_name);
+    const product = await productsService.getProductByName(product_name);
     res.status(200).json({ 
       message: 'Product retrieved successfully', 
       data: product 
@@ -37,8 +37,22 @@ const getProductByName = (req, res) => {
   }
 };
 
+const getProductsByOwner = async (req, res) => {
+  try {
+    const { owner } = req.params;
+    const products = await productsService.getProductsByOwner(owner);
+    res.status(200).json({ 
+      message: 'Products retrieved successfully', 
+      data: products 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createProduct,
   getAllProducts,
-  getProductByName
+  getProductByName,
+  getProductsByOwner
 };

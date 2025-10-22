@@ -1,7 +1,7 @@
 const usersRepository = require('../repositories/usersRepository');
 
 class UsersService {
-  createUser(userData) {
+  async createUser(userData) {
     const { username, name, email, role } = userData;
 
     if (!username || !name || !email || !role) {
@@ -12,7 +12,8 @@ class UsersService {
       throw new Error('Role must be either "buyer" or "seller"');
     }
 
-    if (usersRepository.exists(username)) {
+    const exists = await usersRepository.exists(username);
+    if (exists) {
       throw new Error('Username already exists');
     }
 
@@ -23,15 +24,15 @@ class UsersService {
       role
     };
 
-    return usersRepository.save(newUser);
+    return await usersRepository.save(newUser);
   }
 
-  getAllUsers() {
-    return usersRepository.findAll();
+  async getAllUsers() {
+    return await usersRepository.findAll();
   }
 
-  getUserByUsername(username) {
-    const user = usersRepository.findByUsername(username);
+  async getUserByUsername(username) {
+    const user = await usersRepository.findByUsername(username);
     if (!user) {
       throw new Error('User not found');
     }

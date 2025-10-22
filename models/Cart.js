@@ -60,8 +60,7 @@ cartSchema.methods.calculateTotals = function() {
   this.totalPrice = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 };
 
-// Index untuk performa query
-cartSchema.index({ username: 1 });
+// Index untuk performa query (username sudah unique, tidak perlu index lagi)
 
 const Cart = mongoose.model('Cart', cartSchema);
 

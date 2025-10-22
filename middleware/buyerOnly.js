@@ -1,9 +1,6 @@
-const fs = require('fs');
-const path = require('path');
+const User = require('../models/User');
 
-const usersFilePath = path.join(__dirname, '../../data/users.json');
-
-const buyerOnly = (req, res, next) => {
+const buyerOnly = async (req, res, next) => {
   try {
     const username = req.params.username || req.headers['x-username'];
 
@@ -13,8 +10,7 @@ const buyerOnly = (req, res, next) => {
       });
     }
 
-    const users = JSON.parse(fs.readFileSync(usersFilePath, 'utf8'));
-    const user = users.find(u => u.username === username);
+    const user = await User.findOne({ username });
 
     if (!user) {
       return res.status(404).json({ 
