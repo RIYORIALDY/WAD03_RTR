@@ -5,6 +5,7 @@ const { PrismaClient } = require('@prisma/client');
 jest.mock('@prisma/client', () => {
   const mPrismaClient = {
     cart: {
+      findMany: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
     },
@@ -22,6 +23,30 @@ const prisma = new PrismaClient();
 describe('Cart Repository - Unit Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('findAll', () => {
+    test('[POSITIVE] should find all carts', async () => {
+      const mockCarts = [
+        { id: 1, userId: 1, items: [], user: { username: 'buyer1' } },
+        { id: 2, userId: 2, items: [], user: { username: 'buyer2' } },
+      ];
+      prisma.cart.findMany.mockResolvedValue(mockCarts);
+
+      const result = await cartRepository.findAll();
+
+      expect(result).toEqual(mockCarts);
+      expect(prisma.cart.findMany).toHaveBeenCalledWith({
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
+          },
+          user: true,
+        },
+      });
+    });
   });
 
   describe('findByUsername', () => {

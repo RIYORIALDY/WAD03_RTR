@@ -3,6 +3,7 @@ const cartController = require('../controllers/cartController');
 const cartService = require('../services/cartService');
 
 jest.mock('../services/cartService', () => ({
+  getAllCarts: jest.fn(),
   getCartByUsername: jest.fn(),
   addItemToCart: jest.fn(),
   removeItemFromCart: jest.fn(),
@@ -19,6 +20,27 @@ describe('Cart Controller - Unit Tests', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
+  });
+
+  describe('getAllCarts', () => {
+    test('[POSITIVE] should return all carts with 200', async () => {
+      const mockCarts = [{ username: 'buyer1', items: [] }, { username: 'buyer2', items: [] }];
+      cartService.getAllCarts.mockResolvedValue(mockCarts);
+
+      await cartController.getAllCarts(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Carts retrieved successfully', data: mockCarts });
+    });
+
+    test('[NEGATIVE] should return 500 on error', async () => {
+      cartService.getAllCarts.mockRejectedValue(new Error('Database error'));
+
+      await cartController.getAllCarts(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
+    });
   });
 
   describe('getCart', () => {

@@ -12,6 +12,10 @@ jest.mock('../repositories/productsRepository', () => ({
   findByName: jest.fn(),
 }));
 
+jest.mock('../repositories/cartRepository', () => ({
+  findAll: jest.fn(),
+}));
+
 jest.mock('@prisma/client', () => {
     const mPrismaClient = {
       cart: {
@@ -34,6 +38,22 @@ const prisma = new PrismaClient();
 describe('Cart Service - Unit Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('getAllCarts', () => {
+    test('[POSITIVE] should return all carts', async () => {
+      const mockCarts = [
+        { id: 1, userId: 1, items: [], user: { username: 'buyer1' } },
+        { id: 2, userId: 2, items: [], user: { username: 'buyer2' } },
+      ];
+      const cartsRepository = require('../repositories/cartRepository');
+      cartsRepository.findAll.mockResolvedValue(mockCarts);
+
+      const result = await cartService.getAllCarts();
+
+      expect(result).toEqual(mockCarts);
+      expect(cartsRepository.findAll).toHaveBeenCalled();
+    });
   });
 
   describe('getCartByUsername', () => {
