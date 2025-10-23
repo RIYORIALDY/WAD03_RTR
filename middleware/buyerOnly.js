@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const prisma = require('../prisma/db');
 
 const buyerOnly = async (req, res, next) => {
   try {
@@ -10,7 +10,7 @@ const buyerOnly = async (req, res, next) => {
       });
     }
 
-    const user = await User.findOne({ username });
+    const user = await prisma.user.findUnique({ where: { username } });
 
     if (!user) {
       return res.status(404).json({ 
