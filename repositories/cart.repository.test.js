@@ -1,174 +1,110 @@
-const { describe, test, expect, beforeAll, afterAll, beforeEach } = require('@jest/globals');
-const mongoose = require('mongoose');
-const Cart = require('../models/Cart');
+const { describe, test, expect, beforeEach } = require('@jest/globals');
 const cartRepository = require('./cartRepository');
+const { PrismaClient } = require('@prisma/client');
 
-/**
- * Integration Test untuk Cart Repository
- */
+jest.mock('@prisma/client', () => {
+  const mPrismaClient = {
+    cart: {
+      findUnique: jest.fn(),
+      update: jest.fn(),
+    },
+    cartItem: {
+      delete: jest.fn(),
+      deleteMany: jest.fn(),
+      findFirst: jest.fn(),
+    },
+  };
+  return { PrismaClient: jest.fn(() => mPrismaClient) };
+});
 
-describe('Cart Repository - Integration Tests', () => {
-  beforeAll(async () => {
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGODB_URI);
-    }
-    // Ensure indexes are created
-    await Cart.createIndexes();
-  }, 30000);
+const prisma = new PrismaClient();
 
-  afterAll(async () => {
-    await Cart.deleteMany({});
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.connection.close();
-    }
-  }, 30000);
-
-  beforeEach(async () => {
-    await Cart.deleteMany({});
-  });
-
-  describe('findAll', () => {
-    test('[POSITIVE] should return all carts', async () => {
-      // Arrange
-      await Cart.create([
-        { username: 'buyer1', items: [], totalItems: 0, totalPrice: 0 },
-        { username: 'buyer2', items: [], totalItems: 0, totalPrice: 0 }
-      ]);
-
-      // Act
-      const result = await cartRepository.findAll();
-
-      // Assert
-      expect(result).toHaveLength(2);
-    });
-
-    test('[BOUNDARY] should return empty array when no carts', async () => {
-      // Act
-      const result = await cartRepository.findAll();
-
-      // Assert
-      expect(result).toEqual([]);
-    });
+describe('Cart Repository - Unit Tests', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('findByUsername', () => {
     test('[POSITIVE] should find cart by username', async () => {
-      // Arrange
-      await Cart.create({ 
-        username: 'buyer1', 
-        items: [{ productName: 'Product', productCategory: 'Cat', price: 1000, quantity: 1 }],
-        totalItems: 1,
-        totalPrice: 1000
-      });
+      const mockCart = {
+        id: 1,
+        userId: 1,
+        items: [{ id: 1, productId: 1, quantity: 1, product: { id: 1, name: 'Product' } }],
+      };
+      prisma.cart.findUnique.mockResolvedValue(mockCart);
 
-      // Act
       const result = await cartRepository.findByUsername('buyer1');
 
-      // Assert
-      expect(result).toBeTruthy();
-      expect(result.username).toBe('buyer1');
-      expect(result.items).toHaveLength(1);
+      expect(result).toEqual(mockCart);
+      expect(prisma.cart.findUnique).toHaveBeenCalledWith({
+        where: { user: { username: 'buyer1' } },
+        include: { items: { include: { product: true } } },
+      });
     });
 
     test('[NEGATIVE] should return null when cart not found', async () => {
-      // Act
+      prisma.cart.findUnique.mockResolvedValue(null);
+
       const result = await cartRepository.findByUsername('nonexistent');
 
-      // Assert
       expect(result).toBeNull();
     });
   });
 
-  describe('create', () => {
-    test('[POSITIVE] should create new cart', async () => {
-      // Act
-      const result = await cartRepository.create('newbuyer');
+  describe('addItem', () => {
+    test('[POSITIVE] should add item to cart', async () => {
+      const mockUpdatedCart = { id: 1, userId: 1, items: [{ id: 1, productId: 1, quantity: 1 }] };
+      prisma.cart.update.mockResolvedValue(mockUpdatedCart);
 
-      // Assert
-      expect(result._id).toBeDefined();
-      expect(result.username).toBe('newbuyer');
-      expect(result.items).toEqual([]);
-      expect(result.totalItems).toBe(0);
-      expect(result.totalPrice).toBe(0);
-    });
+      const result = await cartRepository.addItem(1, 1, 1);
 
-    test('[NEGATIVE] should throw error for duplicate username', async () => {
-      // Arrange
-      await cartRepository.create('duplicate');
-
-      // Act & Assert
-      await expect(cartRepository.create('duplicate')).rejects.toThrow();
+      expect(result).toEqual(mockUpdatedCart);
+      expect(prisma.cart.update).toHaveBeenCalledWith({
+        where: { userId: 1 },
+        data: { items: { create: { productId: 1, quantity: 1 } } },
+        include: { items: true },
+      });
     });
   });
 
-  describe('update', () => {
-    test('[POSITIVE] should update existing cart', async () => {
-      // Arrange
-      const cart = await Cart.create({ 
-        username: 'buyer1', 
-        items: [],
-        totalItems: 0,
-        totalPrice: 0
-      });
+  describe('removeItem', () => {
+    test('[POSITIVE] should remove item from cart', async () => {
+      prisma.cart.findUnique.mockResolvedValue({ id: 1, userId: 1 });
+      prisma.cartItem.findFirst.mockResolvedValue({ id: 1, cartId: 1, productId: 1 });
+      prisma.cartItem.delete.mockResolvedValue({ id: 1 });
 
-      cart.items.push({ 
-        productName: 'Product', 
-        productCategory: 'Cat', 
-        price: 1000, 
-        quantity: 2 
-      });
+      const result = await cartRepository.removeItem(1, 1);
 
-      // Act
-      const result = await cartRepository.update(cart);
-
-      // Assert
-      expect(result.items).toHaveLength(1);
-      expect(result.totalItems).toBe(2);
-      expect(result.totalPrice).toBe(2000);
+      expect(result).toEqual({ id: 1 });
+      expect(prisma.cartItem.delete).toHaveBeenCalledWith({ where: { id: 1 } });
     });
 
     test('[NEGATIVE] should throw error if cart not found', async () => {
-      // Arrange
-      const fakeCart = {
-        username: 'nonexistent',
-        items: [],
-        totalItems: 0,
-        totalPrice: 0
-      };
+      prisma.cart.findUnique.mockResolvedValue(null);
+      await expect(cartRepository.removeItem(1, 1)).rejects.toThrow('Cart not found');
+    });
 
-      // Act & Assert
-      await expect(cartRepository.update(fakeCart)).rejects.toThrow('Cart not found');
+    test('[NEGATIVE] should throw error if item not found in cart', async () => {
+      prisma.cart.findUnique.mockResolvedValue({ id: 1, userId: 1 });
+      prisma.cartItem.findFirst.mockResolvedValue(null);
+      await expect(cartRepository.removeItem(1, 1)).rejects.toThrow('Item not found in cart');
     });
   });
 
-  describe('delete', () => {
-    test('[POSITIVE] should delete cart', async () => {
-      // Arrange
-      await Cart.create({ 
-        username: 'buyer1', 
-        items: [],
-        totalItems: 0,
-        totalPrice: 0
-      });
+  describe('clear', () => {
+    test('[POSITIVE] should clear all items from cart', async () => {
+      prisma.cart.findUnique.mockResolvedValue({ id: 1, userId: 1 });
+      prisma.cartItem.deleteMany.mockResolvedValue({ count: 2 });
 
-      // Act
-      const result = await cartRepository.delete('buyer1');
+      const result = await cartRepository.clear(1);
 
-      // Assert
-      expect(result).toBeTruthy();
-      expect(result.username).toBe('buyer1');
-
-      // Verify deletion
-      const found = await Cart.findOne({ username: 'buyer1' });
-      expect(found).toBeNull();
+      expect(result).toEqual({ count: 2 });
+      expect(prisma.cartItem.deleteMany).toHaveBeenCalledWith({ where: { cartId: 1 } });
     });
 
-    test('[NEGATIVE] should return null if cart not found', async () => {
-      // Act
-      const result = await cartRepository.delete('nonexistent');
-
-      // Assert
-      expect(result).toBeNull();
+    test('[NEGATIVE] should throw error if cart not found', async () => {
+      prisma.cart.findUnique.mockResolvedValue(null);
+      await expect(cartRepository.clear(1)).rejects.toThrow('Cart not found');
     });
   });
 });
