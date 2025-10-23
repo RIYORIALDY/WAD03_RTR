@@ -1,17 +1,6 @@
 const express = require('express');
-const database = require('./database');
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Koneksi ke database
-database.connect()
-  .then(() => {
-    console.log('✅ Database siap digunakan');
-  })
-  .catch((error) => {
-    console.error('❌ Gagal koneksi database:', error.message);
-    // Tidak exit process, biarkan app tetap jalan untuk development
-  });
 
 // Middleware untuk parsing JSON
 app.use(express.json());
