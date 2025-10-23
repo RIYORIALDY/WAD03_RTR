@@ -1,13 +1,22 @@
 const prisma = require('../prisma/db');
 
-class CartRepository {
+class CartsRepository {
+  async findAll() {
+    return prisma.cart.findMany({
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+        user: true,
+      },
+    });
+  }
+
   async findByUsername(username) {
     return prisma.cart.findUnique({
-      where: {
-        user: {
-          username,
-        },
-      },
+      where: { user: { username } },
       include: {
         items: {
           include: {
@@ -23,10 +32,7 @@ class CartRepository {
       where: { userId },
       data: {
         items: {
-          create: {
-            productId,
-            quantity,
-          },
+          create: { productId, quantity },
         },
       },
       include: {
@@ -40,21 +46,16 @@ class CartRepository {
     if (!cart) {
       throw new Error('Cart not found');
     }
-
     const cartItem = await prisma.cartItem.findFirst({
       where: {
         cartId: cart.id,
         productId,
       },
     });
-
     if (!cartItem) {
       throw new Error('Item not found in cart');
     }
-
-    return prisma.cartItem.delete({
-      where: { id: cartItem.id },
-    });
+    return prisma.cartItem.delete({ where: { id: cartItem.id } });
   }
 
   async clear(userId) {
@@ -62,11 +63,8 @@ class CartRepository {
     if (!cart) {
       throw new Error('Cart not found');
     }
-
-    return prisma.cartItem.deleteMany({
-      where: { cartId: cart.id },
-    });
+    return prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
   }
 }
 
-module.exports = new CartRepository();
+module.exports = new CartsRepository();

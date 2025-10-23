@@ -3,6 +3,9 @@ const router = express.Router();
 const cartController = require('../controllers/cartController');
 const buyerOnly = require('../middleware/buyerOnly');
 
+// GET /carts - Get all carts
+router.get('/', cartController.getAllCarts);
+
 // GET /carts/:username - Get cart (Buyer only)
 router.get('/:username', buyerOnly, cartController.getCart);
 

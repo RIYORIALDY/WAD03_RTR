@@ -2,8 +2,13 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const usersRepository = require('../repositories/usersRepository');
 const productsRepository = require('../repositories/productsRepository');
+const cartsRepository = require('../repositories/cartRepository');
 
 class CartService {
+  async getAllCarts() {
+    return cartsRepository.findAll();
+  }
+
   async getCartByUsername(username) {
     const user = await usersRepository.findByUsername(username);
     if (!user) {
