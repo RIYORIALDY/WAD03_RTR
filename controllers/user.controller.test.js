@@ -1,66 +1,42 @@
 const { describe, test, expect, beforeEach } = require('@jest/globals');
+const usersController = require('../controllers/usersController');
+const usersService = require('../services/usersService');
 
-/**
- * Unit Test untuk Users Controller
- */
-
-// Mock service
-const mockUsersService = {
+jest.mock('../services/usersService', () => ({
   createUser: jest.fn(),
   getAllUsers: jest.fn(),
   getUserByUsername: jest.fn(),
-};
-
-jest.mock('../services/usersService', () => mockUsersService);
-
-const usersController = require('../controllers/usersController');
+}));
 
 describe('Users Controller - Unit Tests', () => {
   let req, res;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    req = {
-      body: {},
-      params: {}
-    };
+    req = { body: {}, params: {} };
     res = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn(),
     };
   });
 
   describe('createUser', () => {
     test('[POSITIVE] should create user and return 201', async () => {
-      // Arrange
-      req.body = {
-        username: 'testuser',
-        name: 'Test User',
-        email: 'test@test.com',
-        role: 'buyer'
-      };
-      mockUsersService.createUser.mockResolvedValue(req.body);
+      req.body = { username: 'testuser', name: 'Test User', email: 'test@test.com', role: 'buyer' };
+      usersService.createUser.mockResolvedValue(req.body);
 
-      // Act
       await usersController.createUser(req, res);
 
-      // Assert
       expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'User created successfully',
-        data: req.body
-      });
+      expect(res.json).toHaveBeenCalledWith({ message: 'User created successfully', data: req.body });
     });
 
     test('[NEGATIVE] should return 400 on error', async () => {
-      // Arrange
       req.body = { username: '' };
-      mockUsersService.createUser.mockRejectedValue(new Error('Validation error'));
+      usersService.createUser.mockRejectedValue(new Error('Validation error'));
 
-      // Act
       await usersController.createUser(req, res);
 
-      // Assert
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({ error: 'Validation error' });
     });
@@ -68,32 +44,20 @@ describe('Users Controller - Unit Tests', () => {
 
   describe('getAllUsers', () => {
     test('[POSITIVE] should return all users with 200', async () => {
-      // Arrange
-      const mockUsers = [
-        { username: 'user1', name: 'User 1' },
-        { username: 'user2', name: 'User 2' }
-      ];
-      mockUsersService.getAllUsers.mockResolvedValue(mockUsers);
+      const mockUsers = [{ username: 'user1', name: 'User 1' }, { username: 'user2', name: 'User 2' }];
+      usersService.getAllUsers.mockResolvedValue(mockUsers);
 
-      // Act
       await usersController.getAllUsers(req, res);
 
-      // Assert
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'Users retrieved successfully',
-        data: mockUsers
-      });
+      expect(res.json).toHaveBeenCalledWith({ message: 'Users retrieved successfully', data: mockUsers });
     });
 
     test('[NEGATIVE] should return 500 on error', async () => {
-      // Arrange
-      mockUsersService.getAllUsers.mockRejectedValue(new Error('Database error'));
+      usersService.getAllUsers.mockRejectedValue(new Error('Database error'));
 
-      // Act
       await usersController.getAllUsers(req, res);
 
-      // Assert
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
     });
@@ -101,31 +65,22 @@ describe('Users Controller - Unit Tests', () => {
 
   describe('getUserByUsername', () => {
     test('[POSITIVE] should return user with 200', async () => {
-      // Arrange
       req.params.username = 'testuser';
       const mockUser = { username: 'testuser', name: 'Test User' };
-      mockUsersService.getUserByUsername.mockResolvedValue(mockUser);
+      usersService.getUserByUsername.mockResolvedValue(mockUser);
 
-      // Act
       await usersController.getUserByUsername(req, res);
 
-      // Assert
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'User retrieved successfully',
-        data: mockUser
-      });
+      expect(res.json).toHaveBeenCalledWith({ message: 'User retrieved successfully', data: mockUser });
     });
 
     test('[NEGATIVE] should return 404 when user not found', async () => {
-      // Arrange
       req.params.username = 'nonexistent';
-      mockUsersService.getUserByUsername.mockRejectedValue(new Error('User not found'));
+      usersService.getUserByUsername.mockRejectedValue(new Error('User not found'));
 
-      // Act
       await usersController.getUserByUsername(req, res);
 
-      // Assert
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: 'User not found' });
     });
