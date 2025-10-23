@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1761228095111" clover="3.2.0">
-  <project timestamp="1761228095111" name="All files">
-    <metrics statements="184" coveredstatements="184" conditionals="65" coveredconditionals="65" methods="34" coveredmethods="34" elements="283" coveredelements="283" complexity="0" loc="184" ncloc="184" packages="3" files="9" classes="9"/>
+<coverage generated="1761237359730" clover="3.2.0">
+  <project timestamp="1761237359730" name="All files">
+    <metrics statements="181" coveredstatements="181" conditionals="65" coveredconditionals="65" methods="34" coveredmethods="34" elements="280" coveredelements="280" complexity="0" loc="181" ncloc="181" packages="3" files="9" classes="9"/>
     <package name="controllers">
       <metrics statements="71" coveredstatements="71" conditionals="4" coveredconditionals="4" methods="11" coveredmethods="11"/>
       <file name="cartController.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\controllers\cartController.js">
@@ -86,46 +86,43 @@
       </file>
     </package>
     <package name="repositories">
-      <metrics statements="31" coveredstatements="31" conditionals="6" coveredconditionals="6" methods="12" coveredmethods="12"/>
+      <metrics statements="28" coveredstatements="28" conditionals="6" coveredconditionals="6" methods="12" coveredmethods="12"/>
       <file name="cartRepository.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\repositories\cartRepository.js">
-        <metrics statements="16" coveredstatements="16" conditionals="6" coveredconditionals="6" methods="4" coveredmethods="4"/>
+        <metrics statements="15" coveredstatements="15" conditionals="6" coveredconditionals="6" methods="4" coveredmethods="4"/>
         <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="6" count="2" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="40" count="3" type="stmt"/>
-        <line num="41" count="3" type="cond" truecount="2" falsecount="0"/>
-        <line num="42" count="1" type="stmt"/>
-        <line num="45" count="2" type="stmt"/>
-        <line num="52" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="53" count="1" type="stmt"/>
-        <line num="56" count="1" type="stmt"/>
-        <line num="62" count="2" type="stmt"/>
-        <line num="63" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="64" count="1" type="stmt"/>
-        <line num="67" count="1" type="stmt"/>
-        <line num="73" count="1" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="39" count="3" type="stmt"/>
+        <line num="40" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="44" count="2" type="stmt"/>
+        <line num="51" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="61" count="2" type="stmt"/>
+        <line num="62" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
+        <line num="72" count="1" type="stmt"/>
       </file>
       <file name="productsRepository.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\repositories\productsRepository.js">
-        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
         <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="6" count="1" type="stmt"/>
-        <line num="12" count="2" type="stmt"/>
-        <line num="16" count="2" type="stmt"/>
-        <line num="22" count="2" type="stmt"/>
-        <line num="28" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="27" count="1" type="stmt"/>
       </file>
       <file name="usersRepository.js" path="C:\Users\fujitsu\Desktop\WAD03_RTR\repositories\usersRepository.js">
-        <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
         <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="6" count="2" type="stmt"/>
-        <line num="10" count="2" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="22" count="2" type="stmt"/>
-        <line num="25" count="2" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="28" count="1" type="stmt"/>
       </file>
     </package>
     <package name="services">
