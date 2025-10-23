@@ -1,14 +1,14 @@
 const productsRepository = require('../repositories/productsRepository');
+const usersRepository = require('../repositories/usersRepository');
 
 class ProductsService {
   async createProduct(productData) {
-    const { productName, productCategory, price, owner } = productData;
+    const { productName, productCategory, price, owner: ownerUsername } = productData;
 
-    if (!productName || !productCategory || !owner) {
+    if (!productName || !productCategory || !ownerUsername) {
       throw new Error('All fields are required: productName, productCategory, price, owner');
     }
 
-    // Check if price exists and is valid
     if (price === undefined || price === null || price === '') {
       throw new Error('All fields are required: productName, productCategory, price, owner');
     }
@@ -17,16 +17,21 @@ class ProductsService {
       throw new Error('Price must be greater than 0');
     }
 
-    const exists = await productsRepository.exists(productName);
-    if (exists) {
+    const existingProduct = await productsRepository.findByName(productName);
+    if (existingProduct) {
       throw new Error('Product name already exists');
     }
 
+    const owner = await usersRepository.findByUsername(ownerUsername);
+    if (!owner) {
+      throw new Error('Owner not found');
+    }
+
     const newProduct = {
-      productName,
-      productCategory,
+      name: productName,
+      category: productCategory,
       price: parseFloat(price),
-      owner
+      ownerId: owner.id,
     };
 
     return await productsRepository.save(newProduct);
@@ -44,8 +49,12 @@ class ProductsService {
     return product;
   }
 
-  async getProductsByOwner(owner) {
-    return await productsRepository.findByOwner(owner);
+  async getProductsByOwner(ownerUsername) {
+    const owner = await usersRepository.findByUsername(ownerUsername);
+    if (!owner) {
+      throw new Error('Owner not found');
+    }
+    return await productsRepository.findByOwner(owner.id);
   }
 }
 

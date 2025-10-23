@@ -1,126 +1,111 @@
-const cartRepository = require('../repositories/cartRepository');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const usersRepository = require('../repositories/usersRepository');
+const productsRepository = require('../repositories/productsRepository');
 
 class CartService {
-  /**
-   * Get cart by username, create if not exists
-   */
   async getCartByUsername(username) {
-    try {
-      let cart = await cartRepository.findByUsername(username);
-      
-      // Create cart if not exists
-      if (!cart) {
-        cart = await cartRepository.create(username);
-      }
-      
-      return cart;
-    } catch (error) {
-      console.error('Error in cartService.getCartByUsername:', error.message);
-      throw error;
+    const user = await usersRepository.findByUsername(username);
+    if (!user) {
+      throw new Error('User not found');
     }
+    if (user.role !== 'buyer') {
+      throw new Error('Only buyers can have carts');
+    }
+
+    let cart = await prisma.cart.findUnique({
+      where: { userId: user.id },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    if (!cart) {
+      cart = await prisma.cart.create({
+        data: {
+          userId: user.id,
+        },
+        include: {
+          items: true,
+        },
+      });
+    }
+
+    return cart;
   }
 
-  /**
-   * Validate item data
-   */
-  validateItem(item) {
-    if (!item || !item.productName || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-      throw new Error('Invalid item data');
-    }
-    if (item.quantity <= 0) {
-      throw new Error('Quantity must be greater than 0');
-    }
-  }
-
-  /**
-   * Add item to cart
-   */
   async addItemToCart(username, item) {
-    try {
-      this.validateItem(item);
-
-      // Get or create cart
-      let cart = await cartRepository.findByUsername(username);
-      if (!cart) {
-        cart = await cartRepository.create(username);
-      }
-
-      // Check if item already exists in cart
-      const existingItemIndex = cart.items.findIndex(
-        cartItem => cartItem.productName === item.productName
-      );
-
-      if (existingItemIndex !== -1) {
-        // Update quantity if item exists
-        cart.items[existingItemIndex].quantity += item.quantity;
-      } else {
-        // Add new item
-        cart.items.push({
-          productName: item.productName,
-          productCategory: item.productCategory || 'Uncategorized',
-          price: item.price,
-          quantity: item.quantity
-        });
-      }
-
-      // Update cart
-      const updatedCart = await cartRepository.update(cart);
-      return updatedCart;
-    } catch (error) {
-      console.error('Error in cartService.addItemToCart:', error.message);
-      throw error;
+    const { productName, quantity } = item;
+    if (!productName || !quantity || quantity <= 0) {
+      throw new Error('Invalid item data: productName and a positive quantity are required');
     }
+
+    const cart = await this.getCartByUsername(username);
+    const product = await productsRepository.findByName(productName);
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    const existingItem = await prisma.cartItem.findFirst({
+      where: {
+        cartId: cart.id,
+        productId: product.id,
+      },
+    });
+
+    if (existingItem) {
+      await prisma.cartItem.update({
+        where: { id: existingItem.id },
+        data: { quantity: existingItem.quantity + quantity },
+      });
+    } else {
+      await prisma.cartItem.create({
+        data: {
+          cartId: cart.id,
+          productId: product.id,
+          quantity,
+        },
+      });
+    }
+
+    return this.getCartByUsername(username);
   }
 
-  /**
-   * Remove item from cart
-   */
   async removeItemFromCart(username, productName) {
-    try {
-      if (!productName) {
-        throw new Error('Product name is required');
-      }
-
-      const cart = await cartRepository.findByUsername(username);
-      if (!cart) {
-        throw new Error('Cart not found');
-      }
-
-      // Filter out the item
-      cart.items = cart.items.filter(item => item.productName !== productName);
-
-      // Update cart
-      const updatedCart = await cartRepository.update(cart);
-      return updatedCart;
-    } catch (error) {
-      console.error('Error in cartService.removeItemFromCart:', error.message);
-      throw error;
+    const cart = await this.getCartByUsername(username);
+    const product = await productsRepository.findByName(productName);
+    if (!product) {
+      throw new Error('Product not found');
     }
+
+    const cartItem = await prisma.cartItem.findFirst({
+      where: {
+        cartId: cart.id,
+        productId: product.id,
+      },
+    });
+
+    if (!cartItem) {
+      throw new Error('Item not found in cart');
+    }
+
+    await prisma.cartItem.delete({
+      where: { id: cartItem.id },
+    });
+
+    return this.getCartByUsername(username);
   }
 
-  /**
-   * Clear all items from cart
-   */
   async clearCart(username) {
-    try {
-      const cart = await cartRepository.findByUsername(username);
-      if (!cart) {
-        throw new Error('Cart not found');
-      }
-
-      // Clear items
-      cart.items = [];
-      cart.totalItems = 0;
-      cart.totalPrice = 0;
-
-      // Update cart
-      const updatedCart = await cartRepository.update(cart);
-      return updatedCart;
-    } catch (error) {
-      console.error('Error in cartService.clearCart:', error.message);
-      throw error;
-    }
+    const cart = await this.getCartByUsername(username);
+    await prisma.cartItem.deleteMany({
+      where: { cartId: cart.id },
+    });
+    return this.getCartByUsername(username);
   }
 }
 

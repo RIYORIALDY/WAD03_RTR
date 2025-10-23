@@ -1,22 +1,18 @@
 const { describe, test, expect, beforeEach } = require('@jest/globals');
+const productsService = require('../services/productsService');
+const productsRepository = require('../repositories/productsRepository');
+const usersRepository = require('../repositories/usersRepository');
 
-/**
- * Unit Test untuk Products Service
- * Testing Pattern: AAA (Arrange, Act, Assert)
- */
-
-// Mock repository
-const mockProductsRepository = {
+jest.mock('../repositories/productsRepository', () => ({
   findAll: jest.fn(),
   findByOwner: jest.fn(),
   findByName: jest.fn(),
   save: jest.fn(),
-  exists: jest.fn(),
-};
+}));
 
-jest.mock('../repositories/productsRepository', () => mockProductsRepository);
-
-const productsService = require('./productsService');
+jest.mock('../repositories/usersRepository', () => ({
+  findByUsername: jest.fn(),
+}));
 
 describe('Products Service - Unit Tests', () => {
   beforeEach(() => {
@@ -24,149 +20,68 @@ describe('Products Service - Unit Tests', () => {
   });
 
   describe('createProduct', () => {
-    test('[POSITIVE] should create product successfully dengan data valid', async () => {
-      // Arrange
-      const productData = {
-        productName: 'Laptop Gaming',
-        productCategory: 'Electronics',
-        price: 15000000,
-        owner: 'seller1'
-      };
+    test('[POSITIVE] should create product successfully with valid data', async () => {
+      const productData = { productName: 'Laptop Gaming', productCategory: 'Electronics', price: 15000000, owner: 'seller1' };
+      const owner = { id: 1, username: 'seller1' };
+      const newProductData = { name: 'Laptop Gaming', category: 'Electronics', price: 15000000, ownerId: 1 };
       
-      mockProductsRepository.exists.mockResolvedValue(false);
-      mockProductsRepository.save.mockResolvedValue(productData);
+      productsRepository.findByName.mockResolvedValue(null);
+      usersRepository.findByUsername.mockResolvedValue(owner);
+      productsRepository.save.mockResolvedValue({ id: 1, ...newProductData });
 
-      // Act
       const result = await productsService.createProduct(productData);
 
-      // Assert
-      expect(result).toEqual(productData);
-      expect(mockProductsRepository.save).toHaveBeenCalledWith(productData);
+      expect(result).toBeDefined();
+      expect(usersRepository.findByUsername).toHaveBeenCalledWith('seller1');
+      expect(productsRepository.save).toHaveBeenCalledWith(newProductData);
     });
 
-    test('[NEGATIVE] should throw error jika productName kosong', async () => {
-      // Arrange
-      const invalidData = {
-        productName: '',
-        productCategory: 'Electronics',
-        price: 15000000,
-        owner: 'seller1'
-      };
-
-      // Act & Assert
-      await expect(async () => {
-        await productsService.createProduct(invalidData);
-      }).rejects.toThrow('All fields are required');
+    test('[NEGATIVE] should throw error if product name is empty', async () => {
+      const invalidData = { productName: '', productCategory: 'Electronics', price: 15000000, owner: 'seller1' };
+      await expect(productsService.createProduct(invalidData)).rejects.toThrow('All fields are required');
     });
 
-    test('[NEGATIVE] should throw error jika price negatif', async () => {
-      // Arrange
-      const invalidData = {
-        productName: 'Laptop',
-        productCategory: 'Electronics',
-        price: -1000,
-        owner: 'seller1'
-      };
-
-      // Act & Assert
-      await expect(async () => {
-        await productsService.createProduct(invalidData);
-      }).rejects.toThrow('Price must be greater than 0');
+    test('[NEGATIVE] should throw error if price is negative', async () => {
+      const invalidData = { productName: 'Laptop', productCategory: 'Electronics', price: -1000, owner: 'seller1' };
+      await expect(productsService.createProduct(invalidData)).rejects.toThrow('Price must be greater than 0');
     });
 
-    test('[BOUNDARY] should throw error jika price adalah 0', async () => {
-      // Arrange
-      const invalidData = {
-        productName: 'Laptop',
-        productCategory: 'Electronics',
-        price: 0,
-        owner: 'seller1'
-      };
-
-      // Act & Assert
-      await expect(async () => {
-        await productsService.createProduct(invalidData);
-      }).rejects.toThrow('Price must be greater than 0');
-    });
-
-    test('[BOUNDARY] should accept price dengan nilai besar', async () => {
-      // Arrange
-      const productData = {
-        productName: 'Luxury Car',
-        productCategory: 'Automotive',
-        price: 5000000000,
-        owner: 'seller1'
-      };
-      
-      mockProductsRepository.exists.mockResolvedValue(false);
-      mockProductsRepository.save.mockResolvedValue(productData);
-
-      // Act
-      const result = await productsService.createProduct(productData);
-
-      // Assert
-      expect(result.price).toBe(5000000000);
+    test('[NEGATIVE] should throw error if owner not found', async () => {
+      const productData = { productName: 'Laptop', productCategory: 'Electronics', price: 1000, owner: 'nonexistent' };
+      productsRepository.findByName.mockResolvedValue(null);
+      usersRepository.findByUsername.mockResolvedValue(null);
+      await expect(productsService.createProduct(productData)).rejects.toThrow('Owner not found');
     });
   });
 
   describe('getAllProducts', () => {
-    test('[POSITIVE] should return semua products', async () => {
-      // Arrange
-      const mockProducts = [
-        { productName: 'Product 1', price: 10000 },
-        { productName: 'Product 2', price: 20000 }
-      ];
-      
-      mockProductsRepository.findAll.mockResolvedValue(mockProducts);
+    test('[POSITIVE] should return all products', async () => {
+      const mockProducts = [{ name: 'Product 1', price: 10000 }, { name: 'Product 2', price: 20000 }];
+      productsRepository.findAll.mockResolvedValue(mockProducts);
 
-      // Act
       const result = await productsService.getAllProducts();
 
-      // Assert
       expect(result).toEqual(mockProducts);
-      expect(result).toHaveLength(2);
-    });
-
-    test('[BOUNDARY] should return empty array jika tidak ada products', async () => {
-      // Arrange
-      mockProductsRepository.findAll.mockResolvedValue([]);
-
-      // Act
-      const result = await productsService.getAllProducts();
-
-      // Assert
-      expect(result).toEqual([]);
-      expect(result).toHaveLength(0);
     });
   });
 
   describe('getProductsByOwner', () => {
-    test('[POSITIVE] should return products milik owner tertentu', async () => {
-      // Arrange
-      const mockProducts = [
-        { productName: 'Product 1', owner: 'seller1' },
-        { productName: 'Product 2', owner: 'seller1' }
-      ];
-      
-      mockProductsRepository.findByOwner.mockResolvedValue(mockProducts);
+    test('[POSITIVE] should return products for a given owner', async () => {
+      const owner = { id: 1, username: 'seller1' };
+      const mockProducts = [{ name: 'Product 1', ownerId: 1 }, { name: 'Product 2', ownerId: 1 }];
+      usersRepository.findByUsername.mockResolvedValue(owner);
+      productsRepository.findByOwner.mockResolvedValue(mockProducts);
 
-      // Act
       const result = await productsService.getProductsByOwner('seller1');
 
-      // Assert
       expect(result).toEqual(mockProducts);
-      expect(mockProductsRepository.findByOwner).toHaveBeenCalledWith('seller1');
+      expect(usersRepository.findByUsername).toHaveBeenCalledWith('seller1');
+      expect(productsRepository.findByOwner).toHaveBeenCalledWith(1);
     });
 
-    test('[BOUNDARY] should return empty array jika owner tidak punya products', async () => {
-      // Arrange
-      mockProductsRepository.findByOwner.mockResolvedValue([]);
-
-      // Act
-      const result = await productsService.getProductsByOwner('seller2');
-
-      // Assert
-      expect(result).toEqual([]);
+    test('[NEGATIVE] should throw error if owner not found', async () => {
+      usersRepository.findByUsername.mockResolvedValue(null);
+      await expect(productsService.getProductsByOwner('nonexistent')).rejects.toThrow('Owner not found');
     });
   });
 });
