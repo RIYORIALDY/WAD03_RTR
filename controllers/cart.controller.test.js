@@ -1,15 +1,15 @@
 const { describe, test, expect, beforeEach } = require('@jest/globals');
-const productsController = require('../controllers/productsController');
-const productsService = require('../services/productsService');
+const cartController = require('../controllers/cartController');
+const cartService = require('../services/cartService');
 
-jest.mock('../services/productsService', () => ({
-  createProduct: jest.fn(),
-  getAllProducts: jest.fn(),
-  getProductByName: jest.fn(),
-  getProductsByOwner: jest.fn(),
+jest.mock('../services/cartService', () => ({
+  getCartByUsername: jest.fn(),
+  addItemToCart: jest.fn(),
+  removeItemFromCart: jest.fn(),
+  clearCart: jest.fn(),
 }));
 
-describe('Products Controller - Unit Tests', () => {
+describe('Cart Controller - Unit Tests', () => {
   let req, res;
 
   beforeEach(() => {
@@ -21,95 +21,110 @@ describe('Products Controller - Unit Tests', () => {
     };
   });
 
-  describe('createProduct', () => {
-    test('[POSITIVE] should create product and return 201', async () => {
-      req.body = { productName: 'Laptop', productCategory: 'Electronics', price: 10000, owner: 'seller1' };
-      productsService.createProduct.mockResolvedValue(req.body);
+  describe('getCart', () => {
+    test('[POSITIVE] should return cart with 200', async () => {
+      req.params.username = 'buyer1';
+      const mockCart = { username: 'buyer1', items: [], totalItems: 0, totalPrice: 0 };
+      cartService.getCartByUsername.mockResolvedValue(mockCart);
 
-      await productsController.createProduct(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Product created successfully', data: req.body });
-    });
-
-    test('[NEGATIVE] should return 400 on validation error', async () => {
-      req.body = { productName: '' };
-      productsService.createProduct.mockRejectedValue(new Error('Validation error'));
-
-      await productsController.createProduct(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Validation error' });
-    });
-  });
-
-  describe('getAllProducts', () => {
-    test('[POSITIVE] should return all products with 200', async () => {
-      const mockProducts = [{ productName: 'Product 1', price: 1000 }, { productName: 'Product 2', price: 2000 }];
-      productsService.getAllProducts.mockResolvedValue(mockProducts);
-
-      await productsController.getAllProducts(req, res);
+      await cartController.getCart(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Products retrieved successfully', data: mockProducts });
+      expect(res.json).toHaveBeenCalledWith({ message: 'Cart retrieved successfully', data: mockCart });
     });
 
     test('[NEGATIVE] should return 500 on error', async () => {
-        productsService.getAllProducts.mockRejectedValue(new Error('Database error'));
+        req.params.username = 'buyer1';
+        cartService.getCartByUsername.mockRejectedValue(new Error('Database error'));
   
-        await productsController.getAllProducts(req, res);
+        await cartController.getCart(req, res);
   
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
       });
   });
 
-  describe('getProductByName', () => {
-    test('[POSITIVE] should return product with 200', async () => {
-      req.params.product_name = 'Laptop';
-      const mockProduct = { productName: 'Laptop', price: 10000 };
-      productsService.getProductByName.mockResolvedValue(mockProduct);
+  describe('addItemToCart', () => {
+    test('[POSITIVE] should add item and return 200', async () => {
+      req.params.username = 'buyer1';
+      req.body = { productName: 'Laptop', quantity: 1 };
+      const mockCart = { username: 'buyer1', items: [req.body] };
+      cartService.addItemToCart.mockResolvedValue(mockCart);
 
-      await productsController.getProductByName(req, res);
+      await cartController.addItemToCart(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Product retrieved successfully', data: mockProduct });
+      expect(res.json).toHaveBeenCalledWith({ message: 'Item added to cart successfully', data: mockCart });
+    });
+
+    test('[NEGATIVE] should return 400 on validation error', async () => {
+      req.params.username = 'buyer1';
+      req.body = { productName: '' };
+      cartService.addItemToCart.mockRejectedValue(new Error('Invalid item data'));
+
+      await cartController.addItemToCart(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Invalid item data' });
     });
 
     test('[NEGATIVE] should return 404 when product not found', async () => {
-      req.params.product_name = 'NonExistent';
-      productsService.getProductByName.mockRejectedValue(new Error('Product not found'));
-
-      await productsController.getProductByName(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Product not found' });
-    });
+        req.params.username = 'buyer1';
+        req.body = { productName: 'NonExistent' };
+        cartService.addItemToCart.mockRejectedValue(new Error('Product not found'));
+  
+        await cartController.addItemToCart(req, res);
+  
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ error: 'Product not found' });
+      });
   });
 
-  describe('getProductsByOwner', () => {
-    test('[POSITIVE] should return products by owner with 200', async () => {
-      req.params.owner = 'seller1';
-      const mockProducts = [{ productName: 'Product 1', owner: 'seller1' }, { productName: 'Product 2', owner: 'seller1' }];
-      productsService.getProductsByOwner.mockResolvedValue(mockProducts);
+  describe('removeItemFromCart', () => {
+    test('[POSITIVE] should remove item and return 200', async () => {
+      req.params.username = 'buyer1';
+      req.params.productName = 'Laptop';
+      const mockCart = { username: 'buyer1', items: [] };
+      cartService.removeItemFromCart.mockResolvedValue(mockCart);
 
-      await productsController.getProductsByOwner(req, res);
+      await cartController.removeItemFromCart(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Products retrieved successfully', data: mockProducts });
+      expect(res.json).toHaveBeenCalledWith({ message: 'Item removed from cart successfully', data: mockCart });
     });
 
-    test('[BOUNDARY] should return empty array if owner has no products', async () => {
-        req.params.owner = 'seller999';
-        productsService.getProductsByOwner.mockResolvedValue([]);
+    test('[NEGATIVE] should return 404 when cart not found', async () => {
+        req.params.username = 'nonexistent';
+        req.params.productName = 'Laptop';
+        cartService.removeItemFromCart.mockRejectedValue(new Error('Cart not found'));
   
-        await productsController.getProductsByOwner(req, res);
+        await cartController.removeItemFromCart(req, res);
   
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({
-          message: 'Products retrieved successfully',
-          data: []
-        });
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ error: 'Cart not found' });
+      });
+  });
+
+  describe('clearCart', () => {
+    test('[POSITIVE] should clear cart and return 200', async () => {
+      req.params.username = 'buyer1';
+      const mockCart = { username: 'buyer1', items: [] };
+      cartService.clearCart.mockResolvedValue(mockCart);
+
+      await cartController.clearCart(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Cart cleared successfully', data: mockCart });
+    });
+
+    test('[NEGATIVE] should return 500 on error', async () => {
+        req.params.username = 'buyer1';
+        cartService.clearCart.mockRejectedValue(new Error('Database error'));
+  
+        await cartController.clearCart(req, res);
+  
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
       });
   });
 });
