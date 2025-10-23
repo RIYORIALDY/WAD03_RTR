@@ -52,6 +52,22 @@ describe('Products Service - Unit Tests', () => {
       usersRepository.findByUsername.mockResolvedValue(null);
       await expect(productsService.createProduct(productData)).rejects.toThrow('Owner not found');
     });
+
+    test('[NEGATIVE] should throw error if product name already exists', async () => {
+      const productData = { productName: 'Existing Laptop', productCategory: 'Electronics', price: 15000000, owner: 'seller1' };
+      productsRepository.findByName.mockResolvedValue({ id: 1, name: 'Existing Laptop' });
+      await expect(productsService.createProduct(productData)).rejects.toThrow('Product name already exists');
+    });
+
+    test('[NEGATIVE] should throw error if price is null', async () => {
+      const productData = { productName: 'Laptop', productCategory: 'Electronics', price: null, owner: 'seller1' };
+      await expect(productsService.createProduct(productData)).rejects.toThrow('All fields are required: productName, productCategory, price, owner');
+    });
+
+    test('[NEGATIVE] should throw error if price is undefined', async () => {
+      const productData = { productName: 'Laptop', productCategory: 'Electronics', price: undefined, owner: 'seller1' };
+      await expect(productsService.createProduct(productData)).rejects.toThrow('All fields are required: productName, productCategory, price, owner');
+    });
   });
 
   describe('getAllProducts', () => {
@@ -82,6 +98,21 @@ describe('Products Service - Unit Tests', () => {
     test('[NEGATIVE] should throw error if owner not found', async () => {
       usersRepository.findByUsername.mockResolvedValue(null);
       await expect(productsService.getProductsByOwner('nonexistent')).rejects.toThrow('Owner not found');
+    });
+  });
+
+  describe('getProductByName', () => {
+    test('[POSITIVE] should return the product when found', async () => {
+      const mockProduct = { name: 'Laptop', price: 15000000 };
+      productsRepository.findByName.mockResolvedValue(mockProduct);
+      const result = await productsService.getProductByName('Laptop');
+      expect(result).toEqual(mockProduct);
+      expect(productsRepository.findByName).toHaveBeenCalledWith('Laptop');
+    });
+
+    test('[NEGATIVE] should throw an error if product not found', async () => {
+      productsRepository.findByName.mockResolvedValue(null);
+      await expect(productsService.getProductByName('Non Existent Product')).rejects.toThrow('Product not found');
     });
   });
 });
