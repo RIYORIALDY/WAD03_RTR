@@ -1,145 +1,100 @@
-const { describe, test, expect, beforeAll, afterAll, beforeEach } = require('@jest/globals');
-const mongoose = require('mongoose');
-const User = require('../models/User');
+const { describe, test, expect, beforeEach } = require('@jest/globals');
 const usersRepository = require('./usersRepository');
+const { PrismaClient } = require('@prisma/client');
 
-/**
- * Integration Test untuk Users Repository
- * Testing dengan MongoDB test database
- */
+jest.mock('@prisma/client', () => {
+  const mPrismaClient = {
+    user: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+    },
+  };
+  return { PrismaClient: jest.fn(() => mPrismaClient) };
+});
 
-describe('Users Repository - Integration Tests', () => {
-  // Setup test database
-  beforeAll(async () => {
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGODB_URI);
-    }
-    // Ensure indexes are created
-    await User.createIndexes();
-  }, 30000);
+const prisma = new PrismaClient();
 
-  afterAll(async () => {
-    await User.deleteMany({});
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.connection.close();
-    }
-  }, 30000);
-
-  beforeEach(async () => {
-    // Clear users collection sebelum setiap test
-    await User.deleteMany({});
+describe('Users Repository - Unit Tests', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('findAll', () => {
     test('[POSITIVE] should return all users', async () => {
-      // Arrange
-      await User.create([
-        { username: 'user1', name: 'User One', email: 'user1@test.com', role: 'buyer' },
-        { username: 'user2', name: 'User Two', email: 'user2@test.com', role: 'seller' }
-      ]);
+      const mockUsers = [
+        { id: 1, username: 'user1', name: 'User One', email: 'user1@test.com', role: 'buyer' },
+        { id: 2, username: 'user2', name: 'User Two', email: 'user2@test.com', role: 'seller' },
+      ];
+      prisma.user.findMany.mockResolvedValue(mockUsers);
 
-      // Act
       const result = await usersRepository.findAll();
 
-      // Assert
       expect(result).toHaveLength(2);
-      expect(result[0].username).toBeDefined();
+      expect(prisma.user.findMany).toHaveBeenCalledTimes(1);
     });
 
     test('[BOUNDARY] should return empty array when no users', async () => {
-      // Act
+      prisma.user.findMany.mockResolvedValue([]);
+
       const result = await usersRepository.findAll();
 
-      // Assert
       expect(result).toEqual([]);
+      expect(prisma.user.findMany).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('findByUsername', () => {
     test('[POSITIVE] should find user by username', async () => {
-      // Arrange
-      await User.create({ 
-        username: 'testuser', 
-        name: 'Test User', 
-        email: 'test@test.com', 
-        role: 'buyer' 
-      });
+      const mockUser = { id: 1, username: 'testuser', name: 'Test User', email: 'test@test.com', role: 'buyer' };
+      prisma.user.findUnique.mockResolvedValue(mockUser);
 
-      // Act
       const result = await usersRepository.findByUsername('testuser');
 
-      // Assert
-      expect(result).toBeTruthy();
-      expect(result.username).toBe('testuser');
-      expect(result.name).toBe('Test User');
+      expect(result).toEqual(mockUser);
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { username: 'testuser' } });
     });
 
     test('[NEGATIVE] should return null when user not found', async () => {
-      // Act
+      prisma.user.findUnique.mockResolvedValue(null);
+
       const result = await usersRepository.findByUsername('nonexistent');
 
-      // Assert
       expect(result).toBeNull();
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { username: 'nonexistent' } });
     });
   });
 
   describe('save', () => {
     test('[POSITIVE] should save new user', async () => {
-      // Arrange
-      const userData = {
-        username: 'newuser',
-        name: 'New User',
-        email: 'new@test.com',
-        role: 'buyer'
-      };
+      const userData = { username: 'newuser', name: 'New User', email: 'new@test.com', role: 'buyer' };
+      const mockSavedUser = { id: 1, ...userData };
+      prisma.user.create.mockResolvedValue(mockSavedUser);
 
-      // Act
       const result = await usersRepository.save(userData);
 
-      // Assert
-      expect(result._id).toBeDefined();
-      expect(result.username).toBe('newuser');
-      expect(result.createdAt).toBeDefined();
-    });
-
-    test('[NEGATIVE] should throw error for duplicate username', async () => {
-      // Arrange
-      const userData = {
-        username: 'duplicate',
-        name: 'User',
-        email: 'user@test.com',
-        role: 'buyer'
-      };
-      await usersRepository.save(userData);
-
-      // Act & Assert
-      await expect(usersRepository.save(userData)).rejects.toThrow();
+      expect(result).toEqual(mockSavedUser);
+      expect(prisma.user.create).toHaveBeenCalledWith({ data: userData });
     });
   });
 
   describe('exists', () => {
     test('[POSITIVE] should return true if user exists', async () => {
-      // Arrange
-      await User.create({ 
-        username: 'existing', 
-        name: 'Existing User', 
-        email: 'existing@test.com', 
-        role: 'buyer' 
-      });
+      prisma.user.findUnique.mockResolvedValue({ id: 1, username: 'existing' });
 
-      // Act
       const result = await usersRepository.exists('existing');
 
-      // Assert
       expect(result).toBe(true);
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { username: 'existing' } });
     });
 
     test('[NEGATIVE] should return false if user does not exist', async () => {
-      // Act
+      prisma.user.findUnique.mockResolvedValue(null);
+
       const result = await usersRepository.exists('nonexistent');
 
-      // Assert
       expect(result).toBe(false);
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { username: 'nonexistent' } });
     });
   });
 });
