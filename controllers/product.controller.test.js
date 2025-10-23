@@ -111,5 +111,15 @@ describe('Products Controller - Unit Tests', () => {
           data: []
         });
       });
+
+    test('[NEGATIVE] should return 500 on error', async () => {
+      req.params.owner = 'seller1';
+      productsService.getProductsByOwner.mockRejectedValue(new Error('Database error'));
+
+      await productsController.getProductsByOwner(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
+    });
   });
 });
