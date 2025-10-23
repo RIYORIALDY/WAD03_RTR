@@ -1,15 +1,12 @@
-# Sistem
-.DS_Store
-Thumbs.db
-
-# Dependency
-node_modules/
-vendor/
-
-# Build
-dist/
-build/
-
-# Config
+node_modules
 .env
-*.log
+coverage
+
+# Prisma
+prisma/dev.db
+
+# SQLite
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3

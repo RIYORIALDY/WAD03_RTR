@@ -15,7 +15,6 @@
     "ecommerce",
     "express",
     "mvc",
-    "mongodb",
     "jest"
   ],
   "author": "WAD03_RTR",
@@ -23,35 +22,28 @@
   "type": "commonjs",
   "jest": {
     "testEnvironment": "node",
-    "coverageDirectory": "coverage",
     "collectCoverageFrom": [
       "services/**/*.js",
       "repositories/**/*.js",
       "controllers/**/*.js"
     ],
     "testMatch": [
-      "**/Testing/**/*.test.js"
+      "**/?(*.)+(spec|test).js"
     ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/Testing/setup.js"
-    ],
-    "globalSetup": "<rootDir>/Testing/globalSetup.js",
-    "globalTeardown": "<rootDir>/Testing/globalTeardown.js",
     "clearMocks": true,
     "resetMocks": true,
     "restoreMocks": true
   },
   "dependencies": {
+    "@prisma/client": "^6.18.0",
     "express": "^5.1.0",
-    "mongoose": "^8.19.1",
-    "save-dev": "^0.0.1-security",
-    "uuid": "^13.0.0"
+    "save-dev": "^0.0.1-security"
   },
   "devDependencies": {
     "@jest/globals": "^30.2.0",
     "jest": "^30.2.0",
-    "mongodb-memory-server": "^10.2.3",
     "nodemon": "^3.1.10",
+    "prisma": "^6.18.0",
     "supertest": "^7.1.4"
   }
 }
