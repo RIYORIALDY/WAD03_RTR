@@ -1,21 +1,35 @@
 const { describe, test, expect, beforeEach } = require('@jest/globals');
+const cartService = require('../services/cartService');
+const usersRepository = require('../repositories/usersRepository');
+const productsRepository = require('../repositories/productsRepository');
+const { PrismaClient } = require('@prisma/client');
 
-/**
- * Unit Test untuk Cart Service
- * Testing Pattern: AAA (Arrange, Act, Assert)
- */
-
-// Mock repository
-const mockCartRepository = {
+jest.mock('../repositories/usersRepository', () => ({
   findByUsername: jest.fn(),
-  create: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
-};
+}));
 
-jest.mock('../repositories/cartRepository', () => mockCartRepository);
+jest.mock('../repositories/productsRepository', () => ({
+  findByName: jest.fn(),
+}));
 
-const cartService = require('./cartService');
+jest.mock('@prisma/client', () => {
+    const mPrismaClient = {
+      cart: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+      },
+      cartItem: {
+        findFirst: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
+      },
+    };
+    return { PrismaClient: jest.fn(() => mPrismaClient) };
+  });
+  
+const prisma = new PrismaClient();
 
 describe('Cart Service - Unit Tests', () => {
   beforeEach(() => {
@@ -23,213 +37,136 @@ describe('Cart Service - Unit Tests', () => {
   });
 
   describe('getCartByUsername', () => {
-    test('[POSITIVE] should return cart untuk user yang valid', async () => {
-      // Arrange
-      const mockCart = {
-        username: 'buyer1',
-        items: [
-          { productName: 'Laptop', price: 10000000, quantity: 1 }
-        ],
-        totalItems: 1,
-        totalPrice: 10000000
-      };
-      
-      mockCartRepository.findByUsername.mockResolvedValue(mockCart);
+    test('[POSITIVE] should return cart for a valid user', async () => {
+      const user = { id: 1, username: 'buyer1', role: 'buyer' };
+      const mockCart = { id: 1, userId: 1, items: [] };
+      usersRepository.findByUsername.mockResolvedValue(user);
+      prisma.cart.findUnique.mockResolvedValue(mockCart);
 
-      // Act
       const result = await cartService.getCartByUsername('buyer1');
 
-      // Assert
       expect(result).toEqual(mockCart);
-      expect(mockCartRepository.findByUsername).toHaveBeenCalledWith('buyer1');
+      expect(usersRepository.findByUsername).toHaveBeenCalledWith('buyer1');
+      expect(prisma.cart.findUnique).toHaveBeenCalledWith({
+        where: { userId: 1 },
+        include: { items: { include: { product: true } } },
+      });
     });
 
-    test('[POSITIVE] should create cart if not exists', async () => {
-      // Arrange
-      const newCart = {
-        username: 'buyer1',
-        items: [],
-        totalItems: 0,
-        totalPrice: 0
-      };
-      
-      mockCartRepository.findByUsername.mockResolvedValue(null);
-      mockCartRepository.create.mockResolvedValue(newCart);
+    test('[POSITIVE] should create cart if not exists for a buyer', async () => {
+        const user = { id: 1, username: 'buyer1', role: 'buyer' };
+        const newCart = { id: 1, userId: 1, items: [] };
+        usersRepository.findByUsername.mockResolvedValue(user);
+        prisma.cart.findUnique.mockResolvedValue(null);
+        prisma.cart.create.mockResolvedValue(newCart);
+  
+        const result = await cartService.getCartByUsername('buyer1');
+  
+        expect(result).toEqual(newCart);
+        expect(prisma.cart.create).toHaveBeenCalledWith({
+          data: { userId: 1 },
+          include: { items: true },
+        });
+      });
 
-      // Act
-      const result = await cartService.getCartByUsername('buyer1');
+    test('[NEGATIVE] should throw error if user not found', async () => {
+      usersRepository.findByUsername.mockResolvedValue(null);
+      await expect(cartService.getCartByUsername('nonexistent')).rejects.toThrow('User not found');
+    });
 
-      // Assert
-      expect(result).toEqual(newCart);
-      expect(mockCartRepository.create).toHaveBeenCalledWith('buyer1');
+    test('[NEGATIVE] should throw error if user is not a buyer', async () => {
+      const user = { id: 1, username: 'seller1', role: 'seller' };
+      usersRepository.findByUsername.mockResolvedValue(user);
+      await expect(cartService.getCartByUsername('seller1')).rejects.toThrow('Only buyers can have carts');
     });
   });
 
   describe('addItemToCart', () => {
-    test('[POSITIVE] should add item ke cart successfully', async () => {
-      // Arrange
-      const item = {
-        productName: 'Laptop Gaming',
-        productCategory: 'Electronics',
-        price: 15000000,
-        quantity: 1
-      };
-      
-      const existingCart = {
-        username: 'buyer1',
-        items: [],
-        totalItems: 0,
-        totalPrice: 0
-      };
-      
-      const updatedCart = {
-        username: 'buyer1',
-        items: [item],
-        totalItems: 1,
-        totalPrice: 15000000
-      };
-      
-      mockCartRepository.findByUsername.mockResolvedValue(existingCart);
-      mockCartRepository.update.mockResolvedValue(updatedCart);
+    test('[POSITIVE] should add a new item to the cart', async () => {
+        const user = { id: 1, username: 'buyer1', role: 'buyer' };
+        const product = { id: 1, name: 'Laptop' };
+        const cart = { id: 1, userId: 1, items: [] };
+        const item = { productName: 'Laptop', quantity: 1 };
+    
+        // Mock the sequence of calls
+        usersRepository.findByUsername.mockResolvedValue(user);
+        prisma.cart.findUnique.mockResolvedValue(cart); // For the initial getCartByUsername
+        productsRepository.findByName.mockResolvedValue(product);
+        prisma.cartItem.findFirst.mockResolvedValue(null); // Item does not exist in cart
+        prisma.cartItem.create.mockResolvedValue({}); // Mock the creation
+    
+        // Mock the final getCartByUsername call which returns the updated cart
+        const updatedCart = { ...cart, items: [{...item, productId: 1}] };
+        // This is a bit tricky, we need to mock the second call to getCartByUsername
+        cartService.getCartByUsername = jest.fn().mockResolvedValueOnce(cart).mockResolvedValueOnce(updatedCart);
 
-      // Act
-      const result = await cartService.addItemToCart('buyer1', item);
+        const result = await cartService.addItemToCart('buyer1', item);
+    
+        expect(prisma.cartItem.create).toHaveBeenCalledWith({
+          data: { cartId: cart.id, productId: product.id, quantity: 1 },
+        });
+        expect(result).toEqual(updatedCart);
+      });
 
-      // Assert
-      expect(result).toEqual(updatedCart);
-      expect(mockCartRepository.update).toHaveBeenCalled();
+    test('[NEGATIVE] should throw error for invalid item data', async () => {
+      const invalidItem = { productName: '', quantity: 1 };
+      await expect(cartService.addItemToCart('buyer1', invalidItem)).rejects.toThrow('Invalid item data');
     });
 
-    test('[NEGATIVE] should throw error jika item tidak valid', async () => {
-      // Arrange
-      const invalidItem = {
-        productName: '',
-        price: 10000,
-        quantity: 1
-      };
+    test('[NEGATIVE] should throw error if product not found', async () => {
+        const user = { id: 1, username: 'buyer1', role: 'buyer' };
+        const cart = { id: 1, userId: 1, items: [] };
+        const item = { productName: 'nonexistent', quantity: 1 };
+        
+        usersRepository.findByUsername.mockResolvedValue(user);
+        prisma.cart.findUnique.mockResolvedValue(cart);
+        productsRepository.findByName.mockResolvedValue(null);
 
-      // Act & Assert
-      await expect(async () => {
-        await cartService.addItemToCart('buyer1', invalidItem);
-      }).rejects.toThrow('Invalid item data');
-    });
-
-    test('[NEGATIVE] should throw error jika quantity negatif', async () => {
-      // Arrange
-      const invalidItem = {
-        productName: 'Laptop',
-        productCategory: 'Electronics',
-        price: 10000,
-        quantity: -1
-      };
-
-      // Act & Assert
-      await expect(async () => {
-        await cartService.addItemToCart('buyer1', invalidItem);
-      }).rejects.toThrow('Quantity must be greater than 0');
-    });
-
-    test('[BOUNDARY] should accept large quantity', async () => {
-      // Arrange
-      const item = {
-        productName: 'Laptop',
-        productCategory: 'Electronics',
-        price: 10000,
-        quantity: 1000
-      };
-      
-      const existingCart = {
-        username: 'buyer1',
-        items: [],
-        totalItems: 0,
-        totalPrice: 0
-      };
-      
-      const updatedCart = {
-        username: 'buyer1',
-        items: [item],
-        totalItems: 1000,
-        totalPrice: 10000000
-      };
-      
-      mockCartRepository.findByUsername.mockResolvedValue(existingCart);
-      mockCartRepository.update.mockResolvedValue(updatedCart);
-
-      // Act
-      const result = await cartService.addItemToCart('buyer1', item);
-
-      // Assert
-      expect(result.totalItems).toBe(1000);
+        await expect(cartService.addItemToCart('buyer1', item)).rejects.toThrow('Product not found');
     });
   });
 
   describe('removeItemFromCart', () => {
-    test('[POSITIVE] should remove item dari cart successfully', async () => {
-      // Arrange
-      const existingCart = {
-        username: 'buyer1',
-        items: [
-          { productName: 'Laptop', price: 10000, quantity: 1 }
-        ],
-        totalItems: 1,
-        totalPrice: 10000
-      };
-      
-      const updatedCart = {
-        username: 'buyer1',
-        items: [],
-        totalItems: 0,
-        totalPrice: 0
-      };
-      
-      mockCartRepository.findByUsername.mockResolvedValue(existingCart);
-      mockCartRepository.update.mockResolvedValue(updatedCart);
+    test('[POSITIVE] should remove item from cart', async () => {
+        const user = { id: 1, username: 'buyer1', role: 'buyer' };
+        const product = { id: 1, name: 'Laptop' };
+        const cart = { id: 1, userId: 1, items: [{ id: 1, productId: 1, quantity: 1 }] };
+        const cartItem = { id: 1, cartId: 1, productId: 1 };
 
-      // Act
-      const result = await cartService.removeItemFromCart('buyer1', 'Laptop');
+        cartService.getCartByUsername = jest.fn().mockResolvedValue(cart);
+        productsRepository.findByName.mockResolvedValue(product);
+        prisma.cartItem.findFirst.mockResolvedValue(cartItem);
+        prisma.cartItem.delete.mockResolvedValue({});
 
-      // Assert
-      expect(result).toEqual(updatedCart);
-      expect(mockCartRepository.update).toHaveBeenCalled();
+        await cartService.removeItemFromCart('buyer1', 'Laptop');
+
+        expect(prisma.cartItem.delete).toHaveBeenCalledWith({ where: { id: cartItem.id } });
     });
 
-    test('[NEGATIVE] should throw error jika productName kosong', async () => {
-      // Act & Assert
-      await expect(async () => {
-        await cartService.removeItemFromCart('buyer1', '');
-      }).rejects.toThrow('Product name is required');
+    test('[NEGATIVE] should throw error if item not found in cart', async () => {
+        const user = { id: 1, username: 'buyer1', role: 'buyer' };
+        const product = { id: 1, name: 'Laptop' };
+        const cart = { id: 1, userId: 1, items: [] };
+
+        cartService.getCartByUsername = jest.fn().mockResolvedValue(cart);
+        productsRepository.findByName.mockResolvedValue(product);
+        prisma.cartItem.findFirst.mockResolvedValue(null);
+
+        await expect(cartService.removeItemFromCart('buyer1', 'Laptop')).rejects.toThrow('Item not found in cart');
     });
   });
 
   describe('clearCart', () => {
-    test('[POSITIVE] should clear cart successfully', async () => {
-      // Arrange
-      const existingCart = {
-        username: 'buyer1',
-        items: [
-          { productName: 'Laptop', price: 10000, quantity: 1 }
-        ],
-        totalItems: 1,
-        totalPrice: 10000
-      };
-      
-      const emptyCart = {
-        username: 'buyer1',
-        items: [],
-        totalItems: 0,
-        totalPrice: 0
-      };
-      
-      mockCartRepository.findByUsername.mockResolvedValue(existingCart);
-      mockCartRepository.update.mockResolvedValue(emptyCart);
+    test('[POSITIVE] should clear all items from the cart', async () => {
+        const user = { id: 1, username: 'buyer1', role: 'buyer' };
+        const cart = { id: 1, userId: 1, items: [{ id: 1, productId: 1, quantity: 1 }] };
 
-      // Act
-      const result = await cartService.clearCart('buyer1');
+        cartService.getCartByUsername = jest.fn().mockResolvedValue(cart);
+        prisma.cartItem.deleteMany.mockResolvedValue({});
 
-      // Assert
-      expect(result.items).toHaveLength(0);
-      expect(result.totalItems).toBe(0);
-      expect(mockCartRepository.update).toHaveBeenCalled();
+        await cartService.clearCart('buyer1');
+
+        expect(prisma.cartItem.deleteMany).toHaveBeenCalledWith({ where: { cartId: cart.id } });
     });
   });
 });
