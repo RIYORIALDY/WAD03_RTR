@@ -82,31 +82,57 @@ describe('Cart Service - Unit Tests', () => {
   });
 
   describe('addItemToCart', () => {
-    test('[POSITIVE] should add a new item to the cart', async () => {
-        const user = { id: 1, username: 'buyer1', role: 'buyer' };
-        const product = { id: 1, name: 'Laptop' };
-        const cart = { id: 1, userId: 1, items: [] };
-        const item = { productName: 'Laptop', quantity: 1 };
-    
-        // Mock the sequence of calls
-        usersRepository.findByUsername.mockResolvedValue(user);
-        prisma.cart.findUnique.mockResolvedValue(cart); // For the initial getCartByUsername
-        productsRepository.findByName.mockResolvedValue(product);
-        prisma.cartItem.findFirst.mockResolvedValue(null); // Item does not exist in cart
-        prisma.cartItem.create.mockResolvedValue({}); // Mock the creation
-    
-        // Mock the final getCartByUsername call which returns the updated cart
-        const updatedCart = { ...cart, items: [{...item, productId: 1}] };
-        // This is a bit tricky, we need to mock the second call to getCartByUsername
-        cartService.getCartByUsername = jest.fn().mockResolvedValueOnce(cart).mockResolvedValueOnce(updatedCart);
-
-        const result = await cartService.addItemToCart('buyer1', item);
-    
-        expect(prisma.cartItem.create).toHaveBeenCalledWith({
-          data: { cartId: cart.id, productId: product.id, quantity: 1 },
-        });
-        expect(result).toEqual(updatedCart);
+    test('[POSITIVE] should add a new item to the cart if it does not exist', async () => {
+      const user = { id: 1, username: 'buyer1', role: 'buyer' };
+      const product = { id: 1, name: 'Laptop' };
+      const cart = { id: 1, userId: 1, items: [] };
+      const item = { productName: 'Laptop', quantity: 1 };
+  
+      // Mock getCartByUsername to be called twice
+      const getCartByUsernameMock = jest.spyOn(cartService, 'getCartByUsername');
+      getCartByUsernameMock.mockResolvedValueOnce(cart); // First call
+      getCartByUsernameMock.mockResolvedValueOnce({ ...cart, items: [{ product, quantity: 1 }] }); // Second call
+  
+      productsRepository.findByName.mockResolvedValue(product);
+      prisma.cartItem.findFirst.mockResolvedValue(null); // Item does not exist
+      prisma.cartItem.create.mockResolvedValue({});
+  
+      const result = await cartService.addItemToCart('buyer1', item);
+  
+      expect(prisma.cartItem.create).toHaveBeenCalledWith({
+        data: { cartId: cart.id, productId: product.id, quantity: 1 },
       });
+      expect(result.items.length).toBe(1);
+      expect(result.items[0].product).toEqual(product);
+
+      getCartByUsernameMock.mockRestore(); // Clean up spy
+    });
+
+    test('[POSITIVE] should update quantity if item already exists in cart', async () => {
+      const user = { id: 1, username: 'buyer1', role: 'buyer' };
+      const product = { id: 1, name: 'Laptop' };
+      const existingItem = { id: 1, productId: 1, quantity: 1 };
+      const cart = { id: 1, userId: 1, items: [existingItem] };
+      const itemToAdd = { productName: 'Laptop', quantity: 2 };
+  
+      const getCartByUsernameMock = jest.spyOn(cartService, 'getCartByUsername');
+      getCartByUsernameMock.mockResolvedValueOnce(cart);
+      getCartByUsernameMock.mockResolvedValueOnce({ ...cart, items: [{...existingItem, quantity: 3 }] });
+  
+      productsRepository.findByName.mockResolvedValue(product);
+      prisma.cartItem.findFirst.mockResolvedValue(existingItem);
+      prisma.cartItem.update.mockResolvedValue({});
+  
+      const result = await cartService.addItemToCart('buyer1', itemToAdd);
+  
+      expect(prisma.cartItem.update).toHaveBeenCalledWith({
+        where: { id: existingItem.id },
+        data: { quantity: existingItem.quantity + itemToAdd.quantity },
+      });
+      expect(result.items[0].quantity).toBe(3);
+
+      getCartByUsernameMock.mockRestore();
+    });
 
     test('[NEGATIVE] should throw error for invalid item data', async () => {
       const invalidItem = { productName: '', quantity: 1 };
@@ -153,6 +179,16 @@ describe('Cart Service - Unit Tests', () => {
         prisma.cartItem.findFirst.mockResolvedValue(null);
 
         await expect(cartService.removeItemFromCart('buyer1', 'Laptop')).rejects.toThrow('Item not found in cart');
+    });
+
+    test('[NEGATIVE] should throw error if product to remove is not found', async () => {
+      const user = { id: 1, username: 'buyer1', role: 'buyer' };
+      const cart = { id: 1, userId: 1, items: [] };
+
+      cartService.getCartByUsername = jest.fn().mockResolvedValue(cart);
+      productsRepository.findByName.mockResolvedValue(null);
+
+      await expect(cartService.removeItemFromCart('buyer1', 'NonExistentProduct')).rejects.toThrow('Product not found');
     });
   });
 

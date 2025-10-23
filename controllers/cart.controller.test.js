@@ -103,6 +103,17 @@ describe('Cart Controller - Unit Tests', () => {
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ error: 'Cart not found' });
       });
+
+    test('[NEGATIVE] should return 400 on other errors', async () => {
+      req.params.username = 'buyer1';
+      req.params.productName = 'Laptop';
+      cartService.removeItemFromCart.mockRejectedValue(new Error('Some other error'));
+
+      await cartController.removeItemFromCart(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Some other error' });
+    });
   });
 
   describe('clearCart', () => {
